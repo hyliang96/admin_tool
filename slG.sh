@@ -11,9 +11,6 @@ quitvim=${tmp_root}/quitvim
 tmp_finish=${tmp_root}/tmp_finish;        touch $tmp_finish
 
 
-# echo $tmp_log
-# echo $tmp_log_sort
-# echo $tmp_finish
 
 exit_func() {
     # 杀死所有子进程
@@ -22,8 +19,7 @@ exit_func() {
     sort -n $tmp_log
     # if [ "`cat $tmp_finish`" = 'finished' ]; then echo finished; else echo unfinished; fi
     if [ "`cat $tmp_finish`" = 'finished' ]; then echo finished ; else echo unfinished; fi
-    # [ -d $tmp_root ] && rm  -rf $tmp_root
-    echo $tmp_root
+    [ -d $tmp_root ] && rm  -rf $tmp_root
 }
 
 exit_script() {
@@ -45,7 +41,6 @@ trap ctrl_c SIGINT
 # trap 'kill background' EXIT
 
 
-# watch -n 1 -t "sort -n -r $tmp_log" &
 
 pathset=()
 for upper_path in "$@"; do
@@ -62,12 +57,7 @@ for upper_path in "$@"; do
     IFS="$OLD_IFS"
 done
 
-# declare -p pathset
 
-# exit 1
-
-# {
-# } &
 
 
 {
@@ -95,9 +85,6 @@ update_log_sort() {
 
 {
     while true; do
-        # [ "`cat $tmp_finish`" = 'finished' ] &&
-
-        # echo > $tmp_log_sort
         update_log_sort
         if  [ -f $quitvim ]; then  break; fi
         for i in {1..10}; do
@@ -107,7 +94,7 @@ update_log_sort() {
     done
 
     while true; do
-        if  [ -f $quitvim ]; then  break; fi
+        if  [ -f $quitvim ]; then  exit_script; fi
         sleep 0.1
     done
 } &
