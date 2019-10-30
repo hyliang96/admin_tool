@@ -114,7 +114,7 @@ slG()
 {
     _slG "$@"
 }
-alias sl_home="sudo zsh $admin_tool_path/slG.sh /home"
+alias sl_home="sudo zsh $admin_tool_path/slG.sh /home/haoyu"
 
 # slG()
 # {
