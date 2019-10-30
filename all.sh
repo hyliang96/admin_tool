@@ -94,16 +94,16 @@ cmd_for_server()
     local cmd_name="$2"
 
     if [ "$checkuid" = true ] || [ "$checkgid" = true ]; then
-        local id_cmd=''
+        local id_cmd='echo '
         if [ "$checkuid" = true ]; then
-            id_cmd+="\$(ssh '$server' \"id '$uid' 2>&1\"  | grep -v 'no such user')     "
+            id_cmd+="\$(id '$uid' 2>&1 | grep -v 'no such user')  '       '"
         fi
         if [ "$checkgid" = true ]; then
-            id_cmd+="\$(ssh '$server' \"getent group '$gid'\")"
+            id_cmd+="\$(getent group '$gid')"
         fi
-        local local_cmds=("echo  \"${id_cmd}\"")
+        local local_cmds=(command ssh -o 'StrictHostKeyChecking=no' "$server" "${id_cmd}")
     elif [ "$send" = 'true' ]; then
-        local local_cmds=(command rsync -aHhzP -e "ssh -o 'StrictHostKeyChecking no'" "${files[@]}" "$server:$server_path")
+        local local_cmds=(command rsync -aHhzP -e "ssh -o 'StrictHostKeyChecking=no'" "${files[@]}" "$server:$server_path")
     else
         local local_cmds=(command ssh -o 'StrictHostKeyChecking=no' "$server" "$cmds")
     fi
