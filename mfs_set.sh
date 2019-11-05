@@ -150,6 +150,15 @@ allsshmfs()
 # 将所有mfs开启
 alias allmfs='allmfsstart; allsshmfs'
 
+all_unlock_mfsback()
+{
+    if [ $# -eq 0 ]; then
+        local server_set="a"
+    else
+        local server_set="$1"
+    fi
+   all "$server_set"  'rm /home/haoyu/ENV/localENV/log/backup_config_thru_mfs/.backup.lock'
+}
 
 
 
