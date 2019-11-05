@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # ---------------------------------------
 # 加载配置文件
 # get absoltae path to the dir this is in, work in bash, zsh
