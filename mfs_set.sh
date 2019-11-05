@@ -119,7 +119,6 @@ alias allmfsstart="sudo su -c '. $here/load.sh; _allmfsstart'"
 _allsshmfs()
 {
     if [ $# -eq 0 ]; then
-
         local server_set='J23'
     else
         local server_set="$1"
@@ -139,7 +138,13 @@ _allsshmfs()
 allsshmfs()
 {
     # echo "`eval echo $here`"
-    sudo su -c ". $admin_tool_path/load.sh; _allsshmfs '$1' '$2'"
+    if [ $# -eq 0 ]; then
+        sudo su -c ". $admin_tool_path/load.sh; _allsshmfs"
+    elif [ $# -eq 1 ]; then
+        sudo su -c ". $admin_tool_path/load.sh; _allsshmfs '$1'"
+    else
+        sudo su -c ". $admin_tool_path/load.sh; _allsshmfs '$1' '$2'"
+    fi
 }
 
 # 将所有mfs开启

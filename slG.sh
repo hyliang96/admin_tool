@@ -2,16 +2,15 @@
 
 admin_tool_path=$(cd "$(dirname "${BASH_SOURCE[0]-$0}")"; pwd)
 admin_tool_path="`echo $admin_tool_path | sed 's/^\/mfs\/\([^\/]\+\)/\/home\/\1\/mfs/'`"
-. ${admin_tool_path}/utils.sh
+. ${admin_tool_path}/xwatch/xwatch.sh
 
-tmp_log=$(mktemp /tmp/tmp.XXXXXXXXXX)
-tmp_log_sort=$(mktemp /tmp/tmp.XXXXXXXXXX)
-tmp_finish=$(mktemp /tmp/tmp.XXXXXXXXXX)
+tmp_root=$(mktemp -d -t slG.XXXXXXX)
+tmp_log=${tmp_root}/log
+tmp_log_sort=${tmp_root}/tmp_log_sort
+quitvim=${tmp_root}/quitvim
+tmp_finish=${tmp_root}/tmp_finish;        touch $tmp_finish
 
 
-# echo $tmp_log
-# echo $tmp_log_sort
-# echo $tmp_finish
 
 exit_func() {
     # 杀死所有子进程
@@ -20,9 +19,7 @@ exit_func() {
     sort -n $tmp_log
     # if [ "`cat $tmp_finish`" = 'finished' ]; then echo finished; else echo unfinished; fi
     if [ "`cat $tmp_finish`" = 'finished' ]; then echo finished ; else echo unfinished; fi
-    [ -f $tmp_log ] && rm $tmp_log
-    [ -f $tmp_finish ] && rm $tmp_finish
-    [ -f $tmp_log_sort ] && rm $tmp_log_sort
+    [ -d $tmp_root ] && rm  -rf $tmp_root
 }
 
 exit_script() {
@@ -44,7 +41,6 @@ trap ctrl_c SIGINT
 # trap 'kill background' EXIT
 
 
-# watch -n 1 -t "sort -n -r $tmp_log" &
 
 pathset=()
 for upper_path in "$@"; do
@@ -61,41 +57,49 @@ for upper_path in "$@"; do
     IFS="$OLD_IFS"
 done
 
-# declare -p pathset
 
-# exit 1
-
-# {
-# } &
 
 
 {
     for i in "${pathset[@]}"; do
     {
         du  -axhd0  --block-size=1G $i >> $tmp_log 2>&1
-        echo > $tmp_log_sort
-        echo $':q to stop waiting\n' >> $tmp_log_sort
-        sort -n -r $tmp_log >> $tmp_log_sort
     } &
     done
     wait
     # du -axhd1  --block-size=1G $@ >> $tmp_log
     echo finished >> $tmp_finish
-    sed -i '1s/^/finished\n/' $tmp_log_sort
-    echo 'finished' >> $tmp_log_sort
 }  &
+
+
+update_log_sort() {
+    {
+        if [ "`cat $tmp_finish`" = 'finished' ]; then
+            echo 'finished'
+        else
+            echo $'Waiting ... ctrl+c to stop\n'
+        fi
+        sort -n -r $tmp_log
+    } > $tmp_log_sort
+}
 
 {
     while true; do
-        sleep 1
-        if [ "`cat $tmp_finish`" = 'finished' ] && [ "$(head -n1 $tmp_log_sort)" = 'quitvim' ]; then
-            exit_script
-        fi
+        update_log_sort
+        if  [ -f $quitvim ]; then  break; fi
+        for i in {1..10}; do
+            sleep 0.1
+            if  [ -f $quitvim ]; then  break; fi
+        done
+    done
+
+    while true; do
+        if  [ -f $quitvim ]; then  exit_script; fi
+        sleep 0.1
     done
 } &
 
-monitor_file "$tmp_log_sort"
-
+xwatch --file --quitvim "$tmp_log_sort"
 
 wait
 

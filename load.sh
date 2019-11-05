@@ -21,7 +21,7 @@ alltest()
     else
         local server_set="$1"
     fi
-    all "$server_set" 'echo test'
+    all "$server_set" 'echo "hello world"'
 }
 
 alias _send="zsh $here/all.sh --send"
