@@ -39,6 +39,7 @@ xwatch_main()
         trap ctrl_c SIGINT
         xwatch_init_dir
         xwatch_make_output
+        xwatch_update_output
         xwatch_run_command
         xwatch_update_exit_listen
         xwatch_start_monitor
@@ -204,10 +205,9 @@ xwatch_init_dir() {
     feedback=$rootdir/feedback; mkdir $feedback
     feedback_hot=$rootdir/feedback_hot; mkdir $feedback_hot
     outupt=$rootdir/outupt;     mkdir $outupt
-
     # echo "rootdir: $rootdir"
 }
-# run all commands on background
+
 
 xwatch_run_command_kernel() {
     local i=
@@ -274,7 +274,7 @@ xwatch_feedback_summary() {
             if [ "$compact_summary" = true ]; then
                 local finished_cmids=($(cat ${finished}))
                 # result 非全为空字符串，且 i 已完成
-                if ( ! [[ "$result" =~ '^[\ \n\t]*$' ]] ) && \
+                if ( ! [[ "$result" =~ '^[\ \n\t\r]*$' ]] ) && \
                 [ "${finished_cmids[(ie)$i]}" -le ${#finished_cmids} ]; then
                     echo "${tags[$i]}: $result"
                 fi

@@ -2,9 +2,12 @@ runtime! debian.vim
 
 " let skip_defaults_vim=1
 
+set mouse=a
+
 " set nocompatible   " 关闭 vi 兼容模式；不得解注释之，不然'set viminfo='失效
 set viminfo=        " 不输出日志文件，一避免污染vim的日志，二避免找不到日志文件而报错
 
+set fileformats=dos " 让^M不显示
 set updatetime=500  " milliseconds
 set nomodifiable    " 禁止修改
 
@@ -13,14 +16,15 @@ set noshowmode
 set noruler
 set laststatus=0
 set noshowcmd
+" set shortmess=F     " or set it as FAI
+set cmdheight=1
 
 set noeb vb t_vb=                " 关闭鸣叫。Timer函数执行时会鸣叫。
 let g:loaded_matchparen=1        " 关闭括号匹配高亮
 " set noshowmatch
 
 " disable 'Press Enter or type command to continue' at startup.
-set shortmess=a
-set cmdheight=2
+" set cmdheight=2
 " -------------------------------------------------------------------------
 " if filereadable(expand("/mfs/haoyu/server_conf/ENV/serverENV/admin_tool/watchforchanges.vim"))
     " source /mfs/haoyu/server_conf/ENV/serverENV/admin_tool/watchforchanges.vim
