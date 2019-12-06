@@ -253,7 +253,7 @@ allsetuid()
 }
 
 
-allpasswd()
+allpasswd_()
 {
     if ( [ $# -ne 1 ] &&  [ $# -ne 2 ] ) || [ "$1" = '-h' ] || [ "$1" = '--help' ] || [ "$1" = 'help' ]; then
         echo 'Usage: change password for a <user> on all host in <host_set>'
@@ -265,8 +265,8 @@ allpasswd()
     local server_set=$(echo $1 | awk -F@ '{printf $2}')
     shift
 
-    echo $user
-    echo $server_set
+    echo user: $user
+    echo server_set: $server_set
 
     if [ $# -ne 0 ]; then
         local source_host="$1"
@@ -280,6 +280,13 @@ allpasswd()
 
     local encrypted="$(ssh -t $source_host "cat /etc/shadow | grep $user | awk -F: '{ printf \$2}'")"
     all "$server_set" "usermod -p '${encrypted}' $user"
+}
+
+allpasswd()
+{
+    local user_server_set="$1"
+    set -- ${@:2:$#}
+    sudo su -c ". $admin_tool_path/load.sh; allpasswd_ '$user_server_set' $*"
 }
 
 
