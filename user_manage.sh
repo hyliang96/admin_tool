@@ -17,13 +17,7 @@ randpasswd()
     openssl rand -base64 $len
 }
 
-manual_set() {
-    # local username_=
-    local realname_=
-    local uid_=
-    # echo -n 'set username: ' >&2 ; read -r username_
-    echo -n 'set realname: ' >&2 ; read -r realname_
-    echo -n 'set uid: ' >&2 ; read uid_
+get_password() {
     local password=
 
     while true; do
@@ -52,6 +46,19 @@ manual_set() {
         done
     fi
 
+    eval $1=\"\$password\"
+}
+
+manual_set() {
+    # local username_=
+    local realname_=
+    local uid_=
+    # echo -n 'set username: ' >&2 ; read -r username_
+    echo -n 'set realname: ' >&2 ; read -r realname_
+    echo -n 'set uid: ' >&2 ; read uid_
+
+    local password
+    get_password password
     local enc_password_=$(echo "$password" | openssl passwd -1 -stdin)
 
     # eval $1=\"\$username_\"
