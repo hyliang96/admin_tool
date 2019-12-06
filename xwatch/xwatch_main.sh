@@ -204,7 +204,7 @@ xwatch_init_dir() {
     finished=$rootdir/finished; touch $finished
     feedback=$rootdir/feedback; mkdir $feedback
     feedback_hot=$rootdir/feedback_hot; mkdir $feedback_hot
-    output=$rootdir/output;     mkdir $output
+    outupt=$rootdir/outupt;     mkdir $outupt
     # echo "rootdir: $rootdir"
 }
 
@@ -291,16 +291,16 @@ xwatch_make_output() {
     {
         xwatch_unfinished
         xwatch_feedback_summary
-    } > ${output}/writing-${timestamp}
-    mv ${output}/writing-${timestamp} ${output}/writen-${timestamp}
-    # ${output}/writen-${timestamp}
+    } > ${outupt}/writing-${timestamp}
+    mv ${outupt}/writing-${timestamp} ${outupt}/writen-${timestamp}
+    # ${outupt}/writen-${timestamp}
 }
 
 xwatch_update_output() {
-    # local latest_file="$(ls -1 --sort=version ${output}/writen-* 2>/dev/null | tail -n 1)"
-    local latest_file="$(ls -1 ${output}/writen-* 2>/dev/null | sort --version-sort --reverse | head -n 1)"
+    # local latest_file="$(ls -1 --sort=version ${outupt}/writen-* 2>/dev/null | tail -n 1)"
+    local latest_file="$(ls -1 ${outupt}/writen-* 2>/dev/null | sort --version-sort --reverse | head -n 1)"
     if [ "$latest_file" != '' ]; then
-        ln -sf ${latest_file} ${output}/read
+        ln -sf ${latest_file} ${outupt}/read
     fi
 }
 
@@ -308,21 +308,21 @@ xwatch_update_output() {
 xwatch_update_listen() {
     # listen for update
     while true; do
-        if [ -f "${output}/quitvim" ]; then break; fi
+        if [ -f "${outupt}/quitvim" ]; then break; fi
         xwatch_update_output
-        if [ -f "${output}/quitvim" ]; then break; fi
+        if [ -f "${outupt}/quitvim" ]; then break; fi
 
         # # if finished, add finished flag into output file
         # if [ "$(sort --version-sort $todo $finished | uniq -u)" = '' ]; then
         #     xwatch_update_output
-        #     # sed -i '1s/^/vim_atuomatically_quit\n/' ${output}/output_file
-        #     # echo 'vim_atuomatically_quit' >> ${output}/output_file
+        #     # sed -i '1s/^/vim_atuomatically_quit\n/' ${outupt}/output_file
+        #     # echo 'vim_atuomatically_quit' >> ${outupt}/output_file
         #     return
         # fi
 
         # 不写sleep 1, 尽可能早些退出
         for i in {1..10}; do
-            if [ -f "${output}/quitvim" ]; then
+            if [ -f "${outupt}/quitvim" ]; then
                 return
             fi
             sleep 0.1
@@ -335,7 +335,7 @@ xwatch_exit_listen() {
     while true; do
         # 不写sleep 1, 尽可能早些退出
         for i in {1..10}; do
-            if [ -f "${output}/quitvim" ]; then
+            if [ -f "${outupt}/quitvim" ]; then
                 xwatch_exit_script
             fi
             sleep 0.1
@@ -379,7 +379,7 @@ ctrl_c() {
 
 xwatch_start_monitor()
 {
-    command vim -u ${here}/xwatch.vim "${output}/read"
+    command vim -u ${here}/xwatch.vim "${outupt}/read"
 }
 
 
