@@ -123,6 +123,10 @@ parse_username_server() {
     eval $2=\"\$username_\"
     eval $3=\"\$server_set_\"
     eval $4=\"\$error_\"
+
+    # echo username_: $username_
+    # echo server_set_: $server_set_
+    # echo error_: $error_
 }
 
 allsendssh_() {
@@ -134,7 +138,7 @@ allsendssh_() {
 
     local username server_set error
     parse_username_server "$1" username server_set error
-    [ "$error" = true ] && allsendssh_ -h; return
+    [ "$error" = true ] && { echo && allsendssh_ -h; return; }
 
     echo username: $username
     echo server_set: $server_set
@@ -216,7 +220,7 @@ Attention:
 
     local username server_set error
     parse_username_server "$1" username server_set error
-    [ "$error" = true ] && echo &&  _alladduser -h; return
+    [ "$error" = true ] && { echo &&  _alladduser -h; return; }
 
     echo "username: $username"
     echo "server_set: $server_set"
@@ -263,13 +267,13 @@ alldeluser()
         return
     fi
 
-    local username server_set error
-    parse_username_server "$1" username server_set error
-    [ "$error" = true ] && echo &&  alldeluser -h; return
+    local user hostset error
+    parse_username_server "$1" user hostset error
+    [ "$error" = true ] && { echo && alldeluser -h; return; }
 
     answer=$(bash -c "read -p $'You want to delete \e[1;31m$user\e[0m in host set \e[1;31m$hostset\e[0m? It\'s \e[1;31mirreversible\e[0m. [Y/N]' c; echo \$c"); echo
     if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
-        sudo su -c ". $admin_tool_path/load.sh; all '$hostset' 'userdel -r $user; id $user'"
+        sudo su -c ". $admin_tool_path/load.sh; all '$hostset' 'userdel -r $user' 'id $user'"
         # echo "userdel -r $user"
     elif [ "$answer" = "n" ] || [ "$answer" = "N" ]; then
         echo 'please correct the last command'
@@ -325,7 +329,7 @@ allpasswd_()
 
     local username server_set error
     parse_username_server "$1" username server_set error
-    [ "$error" = true ] && echo &&  allpasswd_ -h; return
+    [ "$error" = true ] && { echo &&  allpasswd_ -h; return; }
     shift
 
     echo username: $username
