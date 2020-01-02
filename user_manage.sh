@@ -344,7 +344,7 @@ Attention:
     local parse_command='parse_user_info '"$username"' realname uid enc_password passwd source_host error'
     for i in "$@"; do parse_command+=" '$i'" ; done
     eval "$parse_command"
-    [ "$error" =~ true ] && return
+    [ "$error" = true ] && return
 
 
     echo "============================ making user account  ============================"
