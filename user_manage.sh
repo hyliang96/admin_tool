@@ -21,7 +21,7 @@ get_password() {
     local password1=
 
     while true; do
-        local answer=$(bash -c "read  -n 1 -p 'randomly inititalize password? [Y|N]' c; echo \$c"); echo
+        local answer=$(bash -c "read -p 'randomly inititalize password? [Y|N]' c; echo \$c"); echo
         if [ "$answer" = 'y' ] ||  [ "$answer" = 'Y' ]; then
             local random_password=true
             break
@@ -232,20 +232,61 @@ Attention:
         local enc_password="$3"
         local passwd='已加密'
     else
-        local realname=
-        local uid=
-        local enc_password=
-        local passwd=
-        manual_set realname uid enc_password passwd
+        while true; do
+            local expand=$(bash -c "read -p 'expand existing account to new servers? [Y|N]' c; echo \$c")
+            if [ "$expand" = 'Y' ] || [ "$expand" = 'y' ]; then
+                expand=true
+                break
+            elif [ "$expand" = 'N' ] || [ "$expand" = 'n' ]; then
+                expand=false
+                break
+            else
+                echo "please input Y or N\n" >&2
+            fi
+        done
+
+        if [ "$expand" = true ]; then
+            while true; do
+                local source_host=$(bash -c "read -p 'realneme, uid, password, .ssh/ follow which server ? ' c; echo \$c")
+                local uid="$(ssh $source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$3 }'")"
+                if [[ "$uid" =~ "^[0-9]+$" ]]; then
+                    break
+                else
+                    echo "host $source_host has no user $username; please input a valid server\n" >&2
+                fi
+            done
+
+            local realname="$(ssh $source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$5 }'")"
+            local uid="$(ssh $source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$3 }'")"
+            # local uid="$(ssh $source_host "id $username | grep -Eo 'uid=[0-9]+' | grep -Eo '[0-9]+'")"
+            local enc_password="$(ssh -t $source_host "cat /etc/shadow | grep $username | awk -F: '{ printf \$2}'")"
+            local passwd="follows $source_host"
+        else
+            local realname=
+            local uid=
+            local enc_password=
+            local passwd=
+            manual_set realname uid enc_password passwd
+        fi
     fi
 
     echo "============================ making user account  ============================"
     all "$server_set" "$(adduser_command $username $realname $uid $enc_password)"
 
+    echo "========================== send /home/<user>/.ssh/  =========================="
     local servers=()
     parse_server_set "$server_set" servers
 
-    ssh -A "${servers[1]}" -t ". $admin_tool_path/load.sh && allnewkey '$server_set' $username"
+    # allow authorization agent in this command
+    eval `ssh-agent -s`
+    ssh-add
+    if [ "$expand" = true ]; then
+        ssh -A "$source_host" -t ". $admin_tool_path/load.sh && allsendssh__ $username '$server_set'"
+    else
+        ssh -A "${servers[1]}" -t ". $admin_tool_path/load.sh && allnewkey '$server_set' $username"
+    fi
+    # remove all keys
+    ssh-add -D
 
     userguide "$username" "$passwd" "${servers[*]}"
 }
