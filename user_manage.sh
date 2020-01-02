@@ -157,8 +157,9 @@ allnewkey() {
         echo 'Usage: `allnewkey <server_set> <username>`
 What it will do:
     regernate ~/.ssh/{id_rsa,id_rsa.pub} for <username>
-    add id_rsa.pub to ~/.ssh/authorized_keys
-    send ~/.ssh to all servers in <server_set>'
+    send ~/.ssh to all servers in <server_set>
+It wont do:
+    add id_rsa.pub to ~/.ssh/authorized_keys'
         return
     fi
 
@@ -168,8 +169,8 @@ What it will do:
 
     echo "=================== making keys in /home/$username/.ssh  ====================="
     # 若已有id_rsa,id_rsa.pub，则会询问你是否覆盖之
-    su - $username -c 'ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa -q && \
-     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys'
+    su - $username -c 'ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa -q'
+     # cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys'
 
     echo; echo; echo
     echo "======= distributing /home/$username/.ssh to server set [${server_set}] ========"
