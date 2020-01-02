@@ -21,7 +21,7 @@ get_password() {
     local password1=
 
     while true; do
-        local answer=$(bash -c "read  -n 1 -p 'randomly inititalize password1? [Y|N]' c; echo \$c"); echo
+        local answer=$(bash -c "read  -n 1 -p 'randomly inititalize password? [Y|N]' c; echo \$c"); echo
         if [ "$answer" = 'y' ] ||  [ "$answer" = 'Y' ]; then
             local random_password=true
             break
