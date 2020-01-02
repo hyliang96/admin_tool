@@ -225,13 +225,13 @@ parse_user_info()
     # done
 
     # 分辨模式
-    if [ $# -eq $((5 + 3)) ]; then
+    if [ $# -eq $((6 + 3)) ]; then
         local interactive=false
         local expand=false
-    elif [ $# -eq $((5 + 1)) ]; then
+    elif [ $# -eq $((6 + 1)) ]; then
         local interactive=false
         local expand=true
-    elif [ $# -eq 5 ]; then
+    elif [ $# -eq 6 ]; then
         while true; do
             local interactive=true
             local expand=$(bash -c "read -p 'expand existing account to new servers? [Y|N]' c; echo \$c")
@@ -245,6 +245,7 @@ parse_user_info()
         done
     else
         echo "error: wrong args in parse_user_info" >&2
+        eval $6=true
         return
     fi
 
@@ -261,14 +262,14 @@ parse_user_info()
             if [ "$interactive" = true ]; then
                 local info_source_host=$(bash -c "read -p 'realneme, uid, password, .ssh/ follow which server ? ' c; echo \$c")
             else
-                local info_source_host="$6"
+                local info_source_host="$7"
             fi
             local info_uid="$(ssh $info_source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$3 }'")"
             if [[ "$info_uid" =~ "^[0-9]+$" ]]; then
                 break
             else
                 echo "error: host $info_source_host has no user $username; please input a valid server\n" >&2
-                [ "$interactive" = false ] && return
+                [ "$interactive" = false ] && eval $6=true && return
             fi
         done
     fi
@@ -282,9 +283,9 @@ parse_user_info()
     fi
 
     if [ "$expand" = false ] && [ "$interactive" = false ]; then
-        local info_realname="$6"
-        local info_uid="$7"
-        local info_enc_password="$8"
+        local info_realname="$7"
+        local info_uid="$8"
+        local info_enc_password="$9"
         local info_passwd='已加密'
     fi
 
@@ -303,6 +304,7 @@ parse_user_info()
     eval $3=\"\$info_enc_password\"
     eval $4=\"\$info_passwd\"
     eval $5=\"\$info_source_host\"
+    # eval $6=\"\$info_error\"
 }
 
 _alladduser()
@@ -338,11 +340,11 @@ Attention:
     echo "username: $username"
     echo "server_set: $server_set"
 
-    local realname uid enc_password passwd source_host
-    local parse_command='parse_user_info '"$username"' realname uid enc_password passwd source_host'
+    local realname uid enc_password passwd source_host error
+    local parse_command='parse_user_info '"$username"' realname uid enc_password passwd source_host error'
     for i in "$@"; do parse_command+=" '$i'" ; done
-    local result=$(eval "$parse_command" 2>&1)
-    [ "$result" =~ 'error: ' ] && return
+    eval "$parse_command"
+    [ "$error" =~ true ] && return
 
 
     echo "============================ making user account  ============================"
