@@ -293,12 +293,6 @@ parse_user_info()
         manual_set info_realname info_uid info_enc_password info_passwd
     fi
 
-    # echo -E info_realname: $info_realname
-    # echo -E info_uid: $info_uid
-    # echo -E info_enc_password: $info_enc_password
-    # echo -E info_passwd: $info_passwd
-    # echo -E info_source_host: $info_source_host
-
     eval $1=\"\$info_realname\"
     eval $2=\"\$info_uid\"
     eval $3=\"\$info_enc_password\"
@@ -309,12 +303,6 @@ parse_user_info()
 
 _alladduser()
 {
-    # echo $#
-    # for i in "$@"; do
-        # echo -E "$i"
-    # done
-    # echo '----------'
-
     if [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "help" ]  || \
         ! ( [ $# -eq 1 ] || [ $# -eq 2 ] || [ $# -eq 4 ] ) ; then
         echo 'Usage:
@@ -340,7 +328,7 @@ Attention:
     echo "username: $username"
     echo "server_set: $server_set"
 
-    local realname uid enc_password passwd source_host error
+    local realname uid enc_password passwd source_host error=
     local parse_command='parse_user_info '"$username"' realname uid enc_password passwd source_host error'
     for i in "$@"; do parse_command+=" '$i'" ; done
     eval "$parse_command"
