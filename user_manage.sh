@@ -53,7 +53,7 @@ get_password() {
 
 encypher() {
     local password="$1"
-    echo "$password" | openssl passwd -1 -stdin
+    echo "$password" | openssl passwd -6 -stdin
 }
 
 manual_set() {
@@ -130,9 +130,9 @@ parse_username_server() {
 }
 
 allsendssh_() {
-    if [ $# -ne 1 ] || [ "$1" = '-h' ] || [ "$1" = '--help' ] || [ "$1" = 'help' ]; then
+    if [ $# -ne 2 ] || [ "$1" = '-h' ] || [ "$1" = '--help' ] || [ "$1" = 'help' ]; then
         echo 'Usage:'
-        echo 'allpasswd <username>@<host_set>  :  send /home/<username>/.ssh from this server to <host_set>'
+        echo 'allpasswd <username>@<host_set>  <source_host>:  send <source_host>:/home/<username>/.ssh to <host_set>'
         return
     fi
 
@@ -140,16 +140,37 @@ allsendssh_() {
     parse_username_server "$1" username server_set error
     [ "$error" = true ] && { echo && allsendssh_ -h; return; }
 
+    local source_host="$2"
+    local source_ssh="$(ssh $source_host "ls -d /home/${username}/.ssh")"
+    if [ "$source_ssh" = '' ]; then
+        echo "dir not found: $source_host:/home/${username}/.ssh/" >&2
+        return
+    fi
+
+    echo
     echo username: $username
     echo server_set: $server_set
+    echo source_host: $source_host
 
-    allsendssh__ "$username" "$server_set"
+    local answer=$(bash -c "read -p 'the info above are correct ? [Y|N]' c; echo \$c"); echo
+    if ! ( [ "$answer" = Y ] || [ "$answer" = 'y' ] ); then
+        echo "You chose info not correct. Endding"
+        return
+    fi
+
+    # allow authorization agent in this command
+    eval `ssh-agent -s`
+    ssh-add
+    ssh -A -t $source_host ". $admin_tool_path/load.sh  && allsendssh__ '$username' '$server_set'"
+    # remove all keys
+    ssh-add -D
 }
 
 allsendssh() {
     local user_server_set="$1"
+    # local source_host="$2"
     set -- ${@:2:$#}
-    sudo su -c ". $admin_tool_path/load.sh; allsendssh_ '$user_server_set' $*"
+    sudo su -c ". $admin_tool_path/load.sh && allsendssh_ '$user_server_set' $*"
 }
 
 allnewkey() {
@@ -195,13 +216,109 @@ userguide()
     echo "-------------------------------------------------------------------------"
 }
 
+parse_user_info()
+{
+    local username="$1"; shift
+    echo username = "$username"
+    for i in "${@}"; do
+        echo -E "$i"
+    done
+
+    # 分辨模式
+    if [ $# -eq $((5 + 3)) ]; then
+        local interactive=false
+        local expand=false
+    elif [ $# -eq $((5 + 1)) ]; then
+        local interactive=false
+        local expand=true
+    elif [ $# -eq 5 ]; then
+        while true; do
+            local interactive=true
+            local expand=$(bash -c "read -p 'expand existing account to new servers? [Y|N]' c; echo \$c")
+            if [ "$expand" = 'Y' ] || [ "$expand" = 'y' ]; then
+                expand=true;  break
+            elif [ "$expand" = 'N' ] || [ "$expand" = 'n' ]; then
+                expand=false; break
+            else
+                echo "please input Y or N\n" >&2
+            fi
+        done
+    else
+        echo "error: args in parse_user_info" >&2
+        return
+    fi
+
+    # 获得信息
+    local info_realname=
+    local info_uid=
+    local info_enc_password=
+    local info_passwd=
+    local info_source_host=
+
+
+    if [ "$expand" = true ]; then
+        while true; do
+            if [ "$interactive" = true ]; then
+                local info_source_host=$(bash -c "read -p 'realneme, uid, password, .ssh/ follow which server ? ' c; echo \$c")
+            else
+                local info_source_host="$6"
+            fi
+            local info_uid="$(ssh $info_source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$3 }'")"
+            if [[ "$info_uid" =~ "^[0-9]+$" ]]; then
+                break
+            else
+                echo "error: host $info_source_host has no user $username; please input a valid server\n" >&2
+                [ "$interactive" = false ] && return
+            fi
+        done
+    fi
+
+    if [ "$expand" = true ]; then
+        local info_realname="$(ssh $info_source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$5 }'")"
+        local info_uid="$(ssh $info_source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$3 }'")"
+        # local info_uid="$(ssh $info_source_host "id $username | grep -Eo 'uid=[0-9]+' | grep -Eo '[0-9]+'")"
+        local info_enc_password="$(ssh -t $info_source_host "cat /etc/shadow | grep $username | awk -F: '{ printf \$2}'")"
+        local info_passwd="follows $info_source_host"
+    fi
+
+    if [ "$expand" = false ] && [ "$interactive" = false ]; then
+        local info_realname="$6"
+        local info_uid="$7"
+        local info_enc_password="$8"
+        local info_passwd='已加密'
+    fi
+
+    if [ "$expand" = false ] && [ "$interactive" = true ]; then
+        manual_set info_realname info_uid info_enc_password info_passwd
+    fi
+
+    echo -E info_realname: $info_realname
+    echo -E info_uid: $info_uid
+    echo -E info_enc_password: $info_enc_password
+    echo -E info_passwd: $info_passwd
+    echo -E info_source_host: $info_source_host
+
+    eval $1=\"\$info_realname\"
+    eval $2=\"\$info_uid\"
+    eval $3=\"\$info_enc_password\"
+    eval $4=\"\$info_passwd\"
+    eval $5=\"\$info_source_host\"
+}
+
 _alladduser()
 {
+    echo $#
+    for i in "$@"; do
+        echo -E "$i"
+    done
+    echo '----------'
+
     if [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "help" ]  || \
-        ! ( [ $# -eq 1 ]  || [ $# -eq 4 ] ) ; then
+        ! ( [ $# -eq 1 ] || [ $# -eq 2 ] || [ $# -eq 4 ] ) ; then
         echo 'Usage:
 * interactively:    `alladduser <username>@<server_set>`
     realname can contains English letters in low/captital case, chinese characters, `'\''``. `"`,-,_ ,sapce,etc
+* non-interactively: `alladduser <username>@<server_set>  <source_host> : realname, uid, password, .ssh/ all follow <source_host>`
 * non-interactively: `alladduser <username>@<server_set>  <realname> <uid> <enc_password>`
     the enc_password is gotten by
         method1      `openssl passwd -1`         to encrypted the password
@@ -211,6 +328,8 @@ Attention:
     * generate random password: `openssl rand -base64 24`  24-letter, on 64-bit machine' >&2
         return
     fi
+
+
 
     # local username="$(echo $1 | awk -F@ '{printf $1}')"
     # local server_set="$(echo $1 | awk -F@ '{printf $2}')"
@@ -222,57 +341,30 @@ Attention:
     local username server_set error
     parse_username_server "$1" username server_set error
     [ "$error" = true ] && { echo &&  _alladduser -h; return; }
+    shift
 
     echo "username: $username"
     echo "server_set: $server_set"
 
-    if [ $# -eq 3 ]; then
-        local realname="$1"
-        local uid="$2"
-        local enc_password="$3"
-        local passwd='已加密'
-    else
-        while true; do
-            local expand=$(bash -c "read -p 'expand existing account to new servers? [Y|N]' c; echo \$c")
-            if [ "$expand" = 'Y' ] || [ "$expand" = 'y' ]; then
-                expand=true
-                break
-            elif [ "$expand" = 'N' ] || [ "$expand" = 'n' ]; then
-                expand=false
-                break
-            else
-                echo "please input Y or N\n" >&2
-            fi
-        done
+    local realname uid enc_password passwd source_host
+    # local result="$(
+    local parse_command='parse_user_info '"$username"' realname uid enc_password passwd source_host'
+    for i in "$@"; do parse_command+=" '$i'" ; done
+    eval "$parse_command"
 
-        if [ "$expand" = true ]; then
-            while true; do
-                local source_host=$(bash -c "read -p 'realneme, uid, password, .ssh/ follow which server ? ' c; echo \$c")
-                local uid="$(ssh $source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$3 }'")"
-                if [[ "$uid" =~ "^[0-9]+$" ]]; then
-                    break
-                else
-                    echo "host $source_host has no user $username; please input a valid server\n" >&2
-                fi
-            done
+    echo realname: $realname
+    echo uid: $uid
+    echo enc_password: $enc_password
+    echo passwd: $passwd
+    echo source_host: $source_host
 
-            local realname="$(ssh $source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$5 }'")"
-            local uid="$(ssh $source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$3 }'")"
-            # local uid="$(ssh $source_host "id $username | grep -Eo 'uid=[0-9]+' | grep -Eo '[0-9]+'")"
-            local enc_password="$(ssh -t $source_host "cat /etc/shadow | grep $username | awk -F: '{ printf \$2}'")"
-            local passwd="follows $source_host"
-        else
-            local realname=
-            local uid=
-            local enc_password=
-            local passwd=
-            manual_set realname uid enc_password passwd
-        fi
-    fi
+    # return
 
     echo "============================ making user account  ============================"
     all "$server_set" "$(adduser_command $username $realname $uid $enc_password)"
 
+    echo
+    echo
     echo "========================== send /home/<user>/.ssh/  =========================="
     local servers=()
     parse_server_set "$server_set" servers
@@ -280,7 +372,7 @@ Attention:
     # allow authorization agent in this command
     eval `ssh-agent -s`
     ssh-add
-    if [ "$expand" = true ]; then
+    if [ "$source_host" != '' ]; then
         ssh -A "$source_host" -t ". $admin_tool_path/load.sh && allsendssh__ $username '$server_set'"
     else
         ssh -A "${servers[1]}" -t ". $admin_tool_path/load.sh && allnewkey '$server_set' $username"
@@ -296,9 +388,8 @@ alladduser()
     if [ $# -eq 0 ]; then
         sudo su -c ". $admin_tool_path/load.sh; _alladduser"
     else
-        local user_server_set="$1"
-        set -- ${@:2:$#}
-        sudo su -c ". $admin_tool_path/load.sh; _alladduser '$user_server_set' $*"
+        local args=''; for i in "$@"; do args+="'$i' "; done
+        sudo su -c ". $admin_tool_path/load.sh; _alladduser ${args}"
     fi
 }
 
