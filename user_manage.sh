@@ -244,7 +244,7 @@ Attention:
     local servers=()
     parse_server_set "$server_set" servers
 
-    ssh "${servers[1]}" -t ". $admin_tool_path/load.sh && allnewkey '$server_set' $username"
+    ssh -A "${servers[1]}" -t ". $admin_tool_path/load.sh && allnewkey '$server_set' $username"
 
     userguide "$username" "$passwd" "${servers[*]}"
 }
