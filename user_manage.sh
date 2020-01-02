@@ -244,7 +244,7 @@ parse_user_info()
             fi
         done
     else
-        echo "error: args in parse_user_info" >&2
+        echo "error: wrong args in parse_user_info" >&2
         return
     fi
 
@@ -330,14 +330,6 @@ Attention:
     fi
 
 
-
-    # local username="$(echo $1 | awk -F@ '{printf $1}')"
-    # local server_set="$(echo $1 | awk -F@ '{printf $2}')"
-    # shift
-    # if [ "$server_set"  = '' ]; then
-        # local server_set='a'
-    # fi
-
     local username server_set error
     parse_username_server "$1" username server_set error
     [ "$error" = true ] && { echo &&  _alladduser -h; return; }
@@ -347,18 +339,11 @@ Attention:
     echo "server_set: $server_set"
 
     local realname uid enc_password passwd source_host
-    # local result="$(
     local parse_command='parse_user_info '"$username"' realname uid enc_password passwd source_host'
     for i in "$@"; do parse_command+=" '$i'" ; done
-    eval "$parse_command"
+    local result=$(eval "$parse_command" 2>&1)
+    [ "$result" =~ 'error: ' ] && return
 
-    # echo realname: $realname
-    # echo uid: $uid
-    # echo enc_password: $enc_password
-    # echo passwd: $passwd
-    # echo source_host: $source_host
-
-    # return
 
     echo "============================ making user account  ============================"
     all "$server_set" "$(adduser_command $username $realname $uid $enc_password)"
