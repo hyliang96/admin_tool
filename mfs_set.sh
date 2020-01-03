@@ -25,6 +25,9 @@ usshmfs() # `usshmfs`：卸载ssh挂载的mfs
     if [ -d /home/${USER}/ENV/serverENV_backup ]; then
         ln -s /home/${USER}/ENV/serverENV_backup /home/${USER}/ENV/serverENV
     fi
+    if [ -d /home/${USER}/ENV/junENV_backup ]; then
+        ln -s /home/${USER}/ENV/junENV_backup /home/${USER}/ENV/junENV
+    fi
     # 因为HOME=/home/${USER}/ENV/shareENV/CONF
 
     # 如果这个目录不被占用，则卸挂载，无需sudo
@@ -70,6 +73,11 @@ _sshmfs()
     [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
     if [ -d /home/haoyu/mfs/server_conf/ENV/serverENV ]; then
         ln -s /home/haoyu/mfs/server_conf/ENV/serverENV /home/${USER}/ENV/serverENV
+    fi
+
+    [ -L /home/${USER}/ENV/junENV ] && rm /home/${USER}/ENV/junENV
+    if [ -d /home/haoyu/mfs/server_conf/ENV/junENV ]; then
+        ln -s /home/haoyu/mfs/server_conf/ENV/junENV /home/${USER}/ENV/junENV
     fi
 }
 
