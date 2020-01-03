@@ -15,6 +15,7 @@ usshmfs() # `usshmfs`：卸载ssh挂载的mfs
     [ -L /home/${USER}/ENV/CONF ] && rm /home/${USER}/ENV/CONF
     [ -L /home/${USER}/ENV/shareENV ] && rm /home/${USER}/ENV/shareENV
     [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
+    [ -L /home/${USER}/ENV/junENV ] && rm /home/${USER}/ENV/junENV
 
     if [ -d /home/${USER}/ENV/CONF_backup ]; then
         ln -s /home/${USER}/ENV/CONF_backup /home/${USER}/ENV/CONF
@@ -24,6 +25,9 @@ usshmfs() # `usshmfs`：卸载ssh挂载的mfs
     fi
     if [ -d /home/${USER}/ENV/serverENV_backup ]; then
         ln -s /home/${USER}/ENV/serverENV_backup /home/${USER}/ENV/serverENV
+    fi
+    if [ -d /home/${USER}/ENV/junENV_backup ]; then
+        ln -s /home/${USER}/ENV/junENV_backup /home/${USER}/ENV/junENV
     fi
     # 因为HOME=/home/${USER}/ENV/shareENV/CONF
 
@@ -36,7 +40,7 @@ usshmfs() # `usshmfs`：卸载ssh挂载的mfs
 
 
 
-_sshmfs()
+sshmfs_()
 {
     # 本地shareENV、CONF链接改指向shareENV_backup、CONF_back
 
@@ -56,21 +60,22 @@ _sshmfs()
         # command sshfs -F $local_ssh_config $_mfs_source:/mfs/haoyu /home/${USER}/mfs -o allow_other,default_permissions &&  ls /home/$USER/mfs/
     fi
 
-    # 创建本地linkENV链接，并将本地shareENV链接改指向mfs下的shareENV
-    [ -L /home/${USER}/ENV/CONF ] && rm /home/${USER}/ENV/CONF
-    if [ -d /home/haoyu/mfs/server_conf/ENV/CONF ]; then
-        ln -s /home/haoyu/mfs/server_conf/ENV/CONF /home/${USER}/ENV/CONF
-    fi
+    # # 创建本地linkENV链接，并将本地shareENV链接改指向mfs下的shareENV
+    # if [ -d /home/haoyu/mfs/server_conf/ENV/CONF ]; then
+        # ln -sf /home/haoyu/mfs/server_conf/ENV/CONF /home/${USER}/ENV/CONF
+    # fi
 
-    [ -L /home/${USER}/ENV/shareENV ] && rm /home/${USER}/ENV/shareENV
-    if [ -d /home/haoyu/mfs/server_conf/ENV/shareENV ]; then
-        ln -s /home/haoyu/mfs/server_conf/ENV/shareENV /home/${USER}/ENV/shareENV
-    fi
+    # if [ -d /home/haoyu/mfs/server_conf/ENV/shareENV ]; then
+        # ln -sf /home/haoyu/mfs/server_conf/ENV/shareENV /home/${USER}/ENV/shareENV
+    # fi
 
-    [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
-    if [ -d /home/haoyu/mfs/server_conf/ENV/serverENV ]; then
-        ln -s /home/haoyu/mfs/server_conf/ENV/serverENV /home/${USER}/ENV/serverENV
-    fi
+    # if [ -d /home/haoyu/mfs/server_conf/ENV/serverENV ]; then
+        # ln -sf /home/haoyu/mfs/server_conf/ENV/serverENV /home/${USER}/ENV/serverENV
+    # fi
+
+    # if [ -d /home/haoyu/mfs/server_conf/ENV/junENV ]; then
+        # ln -sf /home/haoyu/mfs/server_conf/ENV/junENV /home/${USER}/ENV/junENV
+    # fi
 }
 
 
@@ -84,7 +89,7 @@ sshmfs()
     # 如果先不把所有指向挂载的mfs下的链接删掉，会挂载进程锁死
     usshmfs
 
-    _sshmfs $@
+    sshmfs_ $@
 }
 
 # 查看所有占用/home/$USER/mfs 的进程
@@ -116,7 +121,7 @@ alias allmfsstart="sudo su -c '. $here/load.sh; _allmfsstart'"
 # 这是因为 su -c 'xxxx' 是非交互式登录，故未经专门设置则不支持alias，只支持function
 
 
-_allusshmfs()
+allusshmfs()
 {
     if [ $# -eq 0 ]; then
         local server_set='J23'
@@ -139,7 +144,7 @@ _allsshmfs()
     else
         local mfs_host=""
     fi
-    all "$server_set" "_sshmfs $mfs_host"
+    all "$server_set" "sshmfs_ $mfs_host"
     # all J23 'umount -l /home/haoyu/mfs; su -l haoyu -c \"command sshfs \$_mfs_source:/mfs/haoyu /home/\${USER}/mfs -o allow_other,default_permissions,reconnect &&  ls /home/\$USER/mfs/\"'
 }
 
@@ -152,7 +157,7 @@ allsshmfs()
     for i in "$@"; do
         args+=" '$i'"
     done
-    eval "_allusshmfs $args"
+    eval "allusshmfs $args"
     eval "_allsshmfs $args"
     # echo "`eval echo $here`"
     # if [ $# -eq 0 ]; then
