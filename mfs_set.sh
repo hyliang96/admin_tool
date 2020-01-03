@@ -40,7 +40,7 @@ usshmfs() # `usshmfs`：卸载ssh挂载的mfs
 
 
 
-_sshmfs()
+sshmfs_()
 {
     # 本地shareENV、CONF链接改指向shareENV_backup、CONF_back
 
@@ -60,22 +60,22 @@ _sshmfs()
         # command sshfs -F $local_ssh_config $_mfs_source:/mfs/haoyu /home/${USER}/mfs -o allow_other,default_permissions &&  ls /home/$USER/mfs/
     fi
 
-    # 创建本地linkENV链接，并将本地shareENV链接改指向mfs下的shareENV
-    if [ -d /home/haoyu/mfs/server_conf/ENV/CONF ]; then
-        ln -sf /home/haoyu/mfs/server_conf/ENV/CONF /home/${USER}/ENV/CONF
-    fi
+    # # 创建本地linkENV链接，并将本地shareENV链接改指向mfs下的shareENV
+    # if [ -d /home/haoyu/mfs/server_conf/ENV/CONF ]; then
+        # ln -sf /home/haoyu/mfs/server_conf/ENV/CONF /home/${USER}/ENV/CONF
+    # fi
 
-    if [ -d /home/haoyu/mfs/server_conf/ENV/shareENV ]; then
-        ln -sf /home/haoyu/mfs/server_conf/ENV/shareENV /home/${USER}/ENV/shareENV
-    fi
+    # if [ -d /home/haoyu/mfs/server_conf/ENV/shareENV ]; then
+        # ln -sf /home/haoyu/mfs/server_conf/ENV/shareENV /home/${USER}/ENV/shareENV
+    # fi
 
-    if [ -d /home/haoyu/mfs/server_conf/ENV/serverENV ]; then
-        ln -sf /home/haoyu/mfs/server_conf/ENV/serverENV /home/${USER}/ENV/serverENV
-    fi
+    # if [ -d /home/haoyu/mfs/server_conf/ENV/serverENV ]; then
+        # ln -sf /home/haoyu/mfs/server_conf/ENV/serverENV /home/${USER}/ENV/serverENV
+    # fi
 
-    if [ -d /home/haoyu/mfs/server_conf/ENV/junENV ]; then
-        ln -sf /home/haoyu/mfs/server_conf/ENV/junENV /home/${USER}/ENV/junENV
-    fi
+    # if [ -d /home/haoyu/mfs/server_conf/ENV/junENV ]; then
+        # ln -sf /home/haoyu/mfs/server_conf/ENV/junENV /home/${USER}/ENV/junENV
+    # fi
 }
 
 
@@ -89,7 +89,7 @@ sshmfs()
     # 如果先不把所有指向挂载的mfs下的链接删掉，会挂载进程锁死
     usshmfs
 
-    _sshmfs $@
+    sshmfs_ $@
 }
 
 # 查看所有占用/home/$USER/mfs 的进程
@@ -144,7 +144,7 @@ _allsshmfs()
     else
         local mfs_host=""
     fi
-    all "$server_set" "_sshmfs $mfs_host"
+    all "$server_set" "sshmfs_ $mfs_host"
     # all J23 'umount -l /home/haoyu/mfs; su -l haoyu -c \"command sshfs \$_mfs_source:/mfs/haoyu /home/\${USER}/mfs -o allow_other,default_permissions,reconnect &&  ls /home/\$USER/mfs/\"'
 }
 
