@@ -15,6 +15,7 @@ usshmfs() # `usshmfs`：卸载ssh挂载的mfs
     [ -L /home/${USER}/ENV/CONF ] && rm /home/${USER}/ENV/CONF
     [ -L /home/${USER}/ENV/shareENV ] && rm /home/${USER}/ENV/shareENV
     [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
+    [ -L /home/${USER}/ENV/junENV ] && rm /home/${USER}/ENV/junENV
 
     if [ -d /home/${USER}/ENV/CONF_backup ]; then
         ln -s /home/${USER}/ENV/CONF_backup /home/${USER}/ENV/CONF
@@ -60,24 +61,20 @@ _sshmfs()
     fi
 
     # 创建本地linkENV链接，并将本地shareENV链接改指向mfs下的shareENV
-    [ -L /home/${USER}/ENV/CONF ] && rm /home/${USER}/ENV/CONF
     if [ -d /home/haoyu/mfs/server_conf/ENV/CONF ]; then
-        ln -s /home/haoyu/mfs/server_conf/ENV/CONF /home/${USER}/ENV/CONF
+        ln -sf /home/haoyu/mfs/server_conf/ENV/CONF /home/${USER}/ENV/CONF
     fi
 
-    [ -L /home/${USER}/ENV/shareENV ] && rm /home/${USER}/ENV/shareENV
     if [ -d /home/haoyu/mfs/server_conf/ENV/shareENV ]; then
-        ln -s /home/haoyu/mfs/server_conf/ENV/shareENV /home/${USER}/ENV/shareENV
+        ln -sf /home/haoyu/mfs/server_conf/ENV/shareENV /home/${USER}/ENV/shareENV
     fi
 
-    [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
     if [ -d /home/haoyu/mfs/server_conf/ENV/serverENV ]; then
-        ln -s /home/haoyu/mfs/server_conf/ENV/serverENV /home/${USER}/ENV/serverENV
+        ln -sf /home/haoyu/mfs/server_conf/ENV/serverENV /home/${USER}/ENV/serverENV
     fi
 
-    [ -L /home/${USER}/ENV/junENV ] && rm /home/${USER}/ENV/junENV
     if [ -d /home/haoyu/mfs/server_conf/ENV/junENV ]; then
-        ln -s /home/haoyu/mfs/server_conf/ENV/junENV /home/${USER}/ENV/junENV
+        ln -sf /home/haoyu/mfs/server_conf/ENV/junENV /home/${USER}/ENV/junENV
     fi
 }
 
