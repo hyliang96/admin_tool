@@ -115,6 +115,17 @@ alias allmfsstart="sudo su -c '. $here/load.sh; _allmfsstart'"
 # 注意，不可把 _allsshmfs 写成一个 alias，必需写成function
 # 这是因为 su -c 'xxxx' 是非交互式登录，故未经专门设置则不支持alias，只支持function
 
+
+_allusshmfs()
+{
+    if [ $# -eq 0 ]; then
+        local server_set='J23'
+    else
+        local server_set="$1"
+    fi
+    sudo su -c ". $admin_tool_path/load.sh && all '$server_set' 'umount -l /home/haoyu/mfs'"
+}
+
 # 重新用sshfs挂载mfs
 _allsshmfs()
 {
@@ -128,7 +139,7 @@ _allsshmfs()
     else
         local mfs_host=""
     fi
-    all "$server_set" "umount -l /home/haoyu/mfs; su -l haoyu -c '_sshmfs $mfs_host'"
+    all "$server_set" "_sshmfs $mfs_host"
     # all J23 'umount -l /home/haoyu/mfs; su -l haoyu -c \"command sshfs \$_mfs_source:/mfs/haoyu /home/\${USER}/mfs -o allow_other,default_permissions,reconnect &&  ls /home/\$USER/mfs/\"'
 }
 
@@ -137,14 +148,20 @@ _allsshmfs()
 # 机器编组：可以只写一台服务器, 可以写多台 形如'g{2..4} g8 g10'
 allsshmfs()
 {
+    local args=''
+    for i in "$@"; do
+        args+=" '$i'"
+    done
+    eval "_allusshmfs $args"
+    eval "_allsshmfs $args"
     # echo "`eval echo $here`"
-    if [ $# -eq 0 ]; then
-        sudo su -c ". $admin_tool_path/load.sh; _allsshmfs"
-    elif [ $# -eq 1 ]; then
-        sudo su -c ". $admin_tool_path/load.sh; _allsshmfs '$1'"
-    else
-        sudo su -c ". $admin_tool_path/load.sh; _allsshmfs '$1' '$2'"
-    fi
+    # if [ $# -eq 0 ]; then
+        # sudo su -c ". $admin_tool_path/load.sh; _allsshmfs"
+    # elif [ $# -eq 1 ]; then
+        # sudo su -c ". $admin_tool_path/load.sh; _allsshmfs '$1'"
+    # else
+        # sudo su -c ". $admin_tool_path/load.sh; _allsshmfs '$1' '$2'"
+    # fi
 }
 
 # 将所有mfs开启
