@@ -116,7 +116,7 @@ alias allmfsstart="sudo su -c '. $here/load.sh; _allmfsstart'"
 # 这是因为 su -c 'xxxx' 是非交互式登录，故未经专门设置则不支持alias，只支持function
 
 
-_allusshmfs()
+allusshmfs()
 {
     if [ $# -eq 0 ]; then
         local server_set='J23'
@@ -152,7 +152,7 @@ allsshmfs()
     for i in "$@"; do
         args+=" '$i'"
     done
-    eval "_allusshmfs $args"
+    eval "allusshmfs $args"
     eval "_allsshmfs $args"
     # echo "`eval echo $here`"
     # if [ $# -eq 0 ]; then
