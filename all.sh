@@ -14,8 +14,8 @@ argparse()
     # 参数解析
     # 参数预处理
     TEMP=$(getopt \
-        -o      nsu:g: \
-        --long  no-prompt,send,uid:,gid: \
+        -o      nst:u:g: \
+        --long  no-prompt,send,timeout:,uid:,gid: \
         -n      '参数解析错误' \
         -- "$@")
     # 写法
@@ -30,6 +30,7 @@ argparse()
     send=false
     checkuid=false
     checkgid=false
+    timeout=false
 
     # 处理参数
     while true ; do case "$1" in
@@ -37,8 +38,9 @@ argparse()
         -n|--no-prompt)  no_prompt=true  ; shift ;;
         -s|--send)       send=true; shift ;;
         # 必有选项
+        -t|--timeout)    timeout=$2; shift 2 ;;
         -u|--uid)        no_prompt=true; checkuid=true; uid=$2; shift 2 ;;
-        -g|--gid)        no_prompt=true; checkgid=true; gid=$2; shift 2;;
+        -g|--gid)        no_prompt=true; checkgid=true; gid=$2; shift 2 ;;
         # '--'后是 余参数
         --) shift ; break ;;
         # 处理参数的代码错误
@@ -100,11 +102,15 @@ cmd_for_server()
         if [ "$checkgid" = true ]; then
             id_cmd+="\$(getent group '$gid')"
         fi
-        local local_cmds=(command ssh -A -o 'StrictHostKeyChecking=no' "$server" "${id_cmd}")
+        local local_cmds=(\ssh -A -o 'StrictHostKeyChecking=no' "$server" "${id_cmd}")
     elif [ "$send" = 'true' ]; then
-        local local_cmds=(command rsync -aHhzP -e "ssh -o 'StrictHostKeyChecking=no'" "${files[@]}" "$server:$server_path")
+        local local_cmds=(\rsync -aHhzP -e "ssh -o 'StrictHostKeyChecking=no'" "${files[@]}" "$server:$server_path")
     else
-        local local_cmds=(command ssh -A -o 'StrictHostKeyChecking=no' "$server" "$cmds")
+        local local_cmds=(\ssh -A -o 'StrictHostKeyChecking=no' "$server" "$cmds")
+    fi
+
+    if [ "$timeout" != false ]; then
+        local_cmds=(timeout $timeout "${local_cmds[@]}")
     fi
     # declare -p local_cmds
     # echo "${cmd_name}"'=("${local_cmds[@]}")'

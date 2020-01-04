@@ -90,7 +90,7 @@ sshmfs_()
     if [ -d /home/${USER}/mfs ]; then
         echo command sshfs $_mfs_source:/mfs/haoyu /home/${USER}/mfs -o allow_other,default_permissions,reconnect
         command sshfs $_mfs_source:/mfs/haoyu /home/${USER}/mfs -o allow_other,default_permissions,reconnect
-        ls /home/$USER/mfs/
+        echo $(ls /home/$USER/mfs/)
         # 由于已经配置好了`/etc/ssh/ssh_config`，故不再需要`-F $local_ssh_config`
         # command sshfs -F $local_ssh_config $_mfs_source:/mfs/haoyu /home/${USER}/mfs -o allow_other,default_permissions &&  ls /home/$USER/mfs/
     fi
@@ -180,7 +180,7 @@ _allsshmfs()
     else
         local mfs_host=""
     fi
-    all "$server_set" "sshmfs_ $mfs_host; echo yes"
+    all --timeout 5 "$server_set" "sshmfs_ $mfs_host "
     # all J23 'umount -l /home/haoyu/mfs; su -l haoyu -c \"command sshfs \$_mfs_source:/mfs/haoyu /home/\${USER}/mfs -o allow_other,default_permissions,reconnect &&  ls /home/\$USER/mfs/\"'
 }
 
