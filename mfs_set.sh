@@ -22,19 +22,25 @@ lkdir()
         ln -sf "$1" "$2"
     fi
 }
-usshmfs() # `usshmfs`：卸载ssh挂载的mfs
+link_backup()
 {
-    # 本地shareENV、serverENV、CONF链接改指向shareENV_backup、serverENV_backup、CONF_backup
     rmlink /home/${USER}/ENV/{CONF,shareENV,serverENV,junENV}
-    # [ -L /home/${USER}/ENV/CONF ] && rm /home/${USER}/ENV/CONF
-    # [ -L /home/${USER}/ENV/shareENV ] && rm /home/${USER}/ENV/shareENV
-    # [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
-    # [ -L /home/${USER}/ENV/junENV ] && rm /home/${USER}/ENV/junENV
 
     lkdir /home/${USER}/ENV/ENV_backup/CONF      /home/${USER}/ENV/CONF
     lkdir /home/${USER}/ENV/ENV_backup/shareENV  /home/${USER}/ENV/shareENV
     lkdir /home/${USER}/ENV/ENV_backup/serverENV /home/${USER}/ENV/serverENV
     lkdir /home/${USER}/ENV/ENV_backup/junENV    /home/${USER}/ENV/junENV
+}
+usshmfs() # `usshmfs`：卸载ssh挂载的mfs
+{
+    # 本地shareENV、serverENV、CONF链接改指向shareENV_backup、serverENV_backup、CONF_backup
+    link_backup
+    # [ -L /home/${USER}/ENV/CONF ] && rm /home/${USER}/ENV/CONF
+    # [ -L /home/${USER}/ENV/shareENV ] && rm /home/${USER}/ENV/shareENV
+    # [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
+    # [ -L /home/${USER}/ENV/junENV ] && rm /home/${USER}/ENV/junENV
+
+
     # if [ -d /home/${USER}/ENV/CONF_backup ]; then
         # ln -s /home/${USER}/ENV/CONF_backup /home/${USER}/ENV/CONF
     # fi
@@ -147,7 +153,7 @@ allusshmfs()
     else
         local server_set="$1"
     fi
-    sudo su -c ". $admin_tool_path/load.sh && all '$server_set' 'umount -l /home/haoyu/mfs'"
+    sudo su -c ". $admin_tool_path/load.sh && all '$server_set' 'su -l $USER -c \"link_backup\" && umount -l /home/haoyu/mfs'"
 }
 
 # 重新用sshfs挂载mfs
