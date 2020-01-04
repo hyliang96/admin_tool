@@ -232,6 +232,7 @@ all_ssh_preenv_pull()
         'su -l $USER -c \"ssh_pull; preenv_pull\"'"
 }
 
+# 当/home/$USER/{.preenv,.ssh/}坏损, 在cpu1上执行次命令, 将cpu1上的.preenv,.ssh/ 发送到各个服务器
 send_ssh_preenv()
 {
     if [ $# -eq 0 ]; then
@@ -239,7 +240,7 @@ send_ssh_preenv()
     else
         local server_set="$1"
     fi
-    sudo su -c ". $admin_tool_path/load.sh && send --delete /home/$USER/{.preenv,.ssh} '$server_set:/home/$USER'"
+    sudo su -c ". $admin_tool_path/load.sh && send --delete $HOME/.shell_config/.preenv $junENV/key/.ssh '$server_set:/home/$USER'"
 }
 
 # unset here
