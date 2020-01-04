@@ -193,10 +193,12 @@ allsshmfs()
     for i in "$@"; do
         args+=" '$i'"
     done
+    echo '===================== usshmfs ===================='
     eval "allusshmfs $args"
+    echo '===================== sshmfs ====================='
     eval "_allsshmfs $args"
     # echo "`eval echo $here`"
-    # if [ $# -eq 0 ]; then
+    # if [ $# -eq 0 ]; thenSSSSS
         # sudo su -c ". $admin_tool_path/load.sh; _allsshmfs"
     # elif [ $# -eq 1 ]; then
         # sudo su -c ". $admin_tool_path/load.sh; _allsshmfs '$1'"
