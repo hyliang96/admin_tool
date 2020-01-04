@@ -104,7 +104,7 @@ cmd_for_server()
     elif [ "$send" = 'true' ]; then
         local local_cmds=(command rsync -aHhzP -e "ssh -o 'StrictHostKeyChecking=no'" "${files[@]}" "$server:$server_path")
     else
-        local local_cmds=(command ssh -A -o 'StrictHostKeyChecking=no' "$server" "$cmds")
+        local local_cmds=(command ssh -At -o 'StrictHostKeyChecking=no' "$server" "$cmds")
     fi
     # declare -p local_cmds
     # echo "${cmd_name}"'=("${local_cmds[@]}")'
