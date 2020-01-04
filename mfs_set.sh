@@ -84,7 +84,12 @@ sshmfs_()
     else
         local _mfs_source="$1"
     fi
+<<<<<<< HEAD
   
+=======
+
+
+>>>>>>> cebfa66f6b0a301ee5724daba75b0969619c50b1
     # 挂载${hostname}上的mfs
     if [ -d /home/${USER}/mfs ]; then
         echo command sshfs $_mfs_source:/mfs/haoyu /home/${USER}/mfs -o allow_other,default_permissions,reconnect
@@ -179,7 +184,11 @@ _allsshmfs()
     else
         local mfs_host=""
     fi
+<<<<<<< HEAD
     all "$server_set" "sshmfs_ $mfs_host"
+=======
+    all "$server_set" "sshmfs_ $mfs_host; echo yes"
+>>>>>>> cebfa66f6b0a301ee5724daba75b0969619c50b1
     # all J23 'umount -l /home/haoyu/mfs; su -l haoyu -c \"command sshfs \$_mfs_source:/mfs/haoyu /home/\${USER}/mfs -o allow_other,default_permissions,reconnect &&  ls /home/\$USER/mfs/\"'
 }
 
