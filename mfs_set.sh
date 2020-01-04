@@ -222,6 +222,14 @@ all_unlock_mfsback()
 
 
 all_ssh_preenv_pull()
-{}
+{
+    if [ $# -eq 0 ]; then
+        local server_set="a"
+    else
+        local server_set="$1"
+    fi
+    sudo su -c ". $admin_tool_path/load.sh && all '$server_set'  \
+        'su -l $USER -c \"ssh_pull; backup_preenv\"'"
+}
 
 # unset here
