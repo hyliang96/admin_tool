@@ -22,7 +22,11 @@ lkdir()
         ln -sfT "$1" "$2"
     fi
 }
+<<<<<<< HEAD
 link_to_backup()
+=======
+link_backup()
+>>>>>>> 20ed68802938b241720a8d204ffd205efa766b15
 {
     rmlink /home/${USER}/ENV/{CONF,shareENV,serverENV,junENV}
 
@@ -31,6 +35,7 @@ link_to_backup()
     lkdir /home/${USER}/ENV/ENV_backup/serverENV /home/${USER}/ENV/serverENV
     lkdir /home/${USER}/ENV/ENV_backup/junENV    /home/${USER}/ENV/junENV
 }
+<<<<<<< HEAD
 link_to_mfs()
 {
     # rmlink /home/${USER}/ENV/{CONF,shareENV,serverENV,junENV}
@@ -44,6 +49,12 @@ usshmfs() # `usshmfs`：卸载ssh挂载的mfs
 {
     # 本地shareENV、serverENV、CONF链接改指向shareENV_backup、serverENV_backup、CONF_backup
     link_to_backup
+=======
+usshmfs() # `usshmfs`：卸载ssh挂载的mfs
+{
+    # 本地shareENV、serverENV、CONF链接改指向shareENV_backup、serverENV_backup、CONF_backup
+    link_backup
+>>>>>>> 20ed68802938b241720a8d204ffd205efa766b15
     # [ -L /home/${USER}/ENV/CONF ] && rm /home/${USER}/ENV/CONF
     # [ -L /home/${USER}/ENV/shareENV ] && rm /home/${USER}/ENV/shareENV
     # [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
@@ -163,7 +174,11 @@ allusshmfs()
     else
         local server_set="$1"
     fi
+<<<<<<< HEAD
     sudo su -c ". $admin_tool_path/load.sh && all '$server_set' 'su -l $USER -c \"link_to_backup\" && umount -l /home/haoyu/mfs'"
+=======
+    sudo su -c ". $admin_tool_path/load.sh && all '$server_set' 'su -l $USER -c \"link_backup\" && umount -l /home/haoyu/mfs'"
+>>>>>>> 20ed68802938b241720a8d204ffd205efa766b15
 }
 
 # 重新用sshfs挂载mfs
