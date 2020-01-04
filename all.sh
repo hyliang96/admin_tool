@@ -106,15 +106,11 @@ cmd_for_server()
     elif [ "$send" = 'true' ]; then
         local local_cmds=(\rsync -aHhzP -e "ssh -o 'StrictHostKeyChecking=no'" "${files[@]}" "$server:$server_path")
     else
-<<<<<<< HEAD
         local local_cmds=(\ssh -A -o 'StrictHostKeyChecking=no' "$server" "$cmds")
     fi
 
     if [ "$timeout" != false ]; then
         local_cmds=(timeout $timeout "${local_cmds[@]}")
-=======
-        local local_cmds=(command ssh -At -o 'StrictHostKeyChecking=no' "$server" "$cmds")
->>>>>>> 8da43483eab4c06b19ed1166c95d142af9beb4c9
     fi
     # declare -p local_cmds
     # echo "${cmd_name}"'=("${local_cmds[@]}")'
