@@ -14,8 +14,8 @@ argparse()
     # 参数解析
     # 参数预处理
     TEMP=$(getopt \
-        -o      nst:u:g: \
-        --long  no-prompt,send,timeout:,uid:,gid: \
+        -o      nsdt:u:g: \
+        --long  no-prompt,send,delete,timeout:,uid:,gid: \
         -n      '参数解析错误' \
         -- "$@")
     # 写法
@@ -28,6 +28,7 @@ argparse()
     # 初始化参数
     no_prompt=false
     send=false
+    delete=false
     checkuid=false
     checkgid=false
     timeout=false
@@ -37,6 +38,7 @@ argparse()
         # 无选项
         -n|--no-prompt)  no_prompt=true  ; shift ;;
         -s|--send)       send=true; shift ;;
+        -d|--delete)     delete=true; shift ;;
         # 必有选项
         -t|--timeout)    timeout=$2; shift 2 ;;
         -u|--uid)        no_prompt=true; checkuid=true; uid=$2; shift 2 ;;
@@ -105,6 +107,9 @@ cmd_for_server()
         local local_cmds=(\ssh -A -o 'StrictHostKeyChecking=no' "$server" "${id_cmd}")
     elif [ "$send" = 'true' ]; then
         local local_cmds=(\rsync -aHhzP -e "ssh -o 'StrictHostKeyChecking=no'" "${files[@]}" "$server:$server_path")
+        if [ "$delete" = true ]; then
+            local_cmds+=("--delete")
+        fi
     else
         local local_cmds=(\ssh -A -o 'StrictHostKeyChecking=no' "$server" "$cmds")
     fi

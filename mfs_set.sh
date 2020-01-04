@@ -229,7 +229,17 @@ all_ssh_preenv_pull()
         local server_set="$1"
     fi
     sudo su -c ". $admin_tool_path/load.sh && all '$server_set'  \
-        'su -l $USER -c \"ssh_pull; backup_preenv\"'"
+        'su -l $USER -c \"ssh_pull; preenv_pull\"'"
+}
+
+send_ssh_preenv()
+{
+    if [ $# -eq 0 ]; then
+        local server_set="a"
+    else
+        local server_set="$1"
+    fi
+    sudo su -c ". $admin_tool_path/load.sh && send --delete /home/$USER/{.preenv,.ssh} '$server_set:/home/$USER'"
 }
 
 # unset here
