@@ -8,27 +8,46 @@ here=$(cd "$(dirname "${BASH_SOURCE[0]-$0}")"; pwd)
 . $here/hosts.sh
 
 
-
+rmlink()
+{
+    for i in "$@"; do
+        if [ -L "$i" ]; then
+            rm "$i"
+        fi
+    done
+}
+lkdir()
+{
+    if [ -d "$1" ]; then
+        ln -sf "$1" "$2"
+    fi
+}
 usshmfs() # `usshmfs`：卸载ssh挂载的mfs
 {
     # 本地shareENV、serverENV、CONF链接改指向shareENV_backup、serverENV_backup、CONF_backup
-    [ -L /home/${USER}/ENV/CONF ] && rm /home/${USER}/ENV/CONF
-    [ -L /home/${USER}/ENV/shareENV ] && rm /home/${USER}/ENV/shareENV
-    [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
-    [ -L /home/${USER}/ENV/junENV ] && rm /home/${USER}/ENV/junENV
+    rmlink /home/${USER}/ENV/{CONF,shareENV,serverENV,junENV}
+    # [ -L /home/${USER}/ENV/CONF ] && rm /home/${USER}/ENV/CONF
+    # [ -L /home/${USER}/ENV/shareENV ] && rm /home/${USER}/ENV/shareENV
+    # [ -L /home/${USER}/ENV/serverENV ] && rm /home/${USER}/ENV/serverENV
+    # [ -L /home/${USER}/ENV/junENV ] && rm /home/${USER}/ENV/junENV
 
-    if [ -d /home/${USER}/ENV/CONF_backup ]; then
-        ln -s /home/${USER}/ENV/CONF_backup /home/${USER}/ENV/CONF
-    fi
-    if [ -d /home/${USER}/ENV/shareENV_backup ]; then
-        ln -s /home/${USER}/ENV/shareENV_backup /home/${USER}/ENV/shareENV
-    fi
-    if [ -d /home/${USER}/ENV/serverENV_backup ]; then
-        ln -s /home/${USER}/ENV/serverENV_backup /home/${USER}/ENV/serverENV
-    fi
-    if [ -d /home/${USER}/ENV/junENV_backup ]; then
-        ln -s /home/${USER}/ENV/junENV_backup /home/${USER}/ENV/junENV
-    fi
+    lkdir /home/${USER}/ENV/ENV_backup/CONF      /home/${USER}/ENV/CONF
+    lkdir /home/${USER}/ENV/ENV_backup/shareENV  /home/${USER}/ENV/shareENV
+    lkdir /home/${USER}/ENV/ENV_backup/serverENV /home/${USER}/ENV/serverENV
+    lkdir /home/${USER}/ENV/ENV_backup/junENV    /home/${USER}/ENV/junENV
+    # if [ -d /home/${USER}/ENV/CONF_backup ]; then
+        # ln -s /home/${USER}/ENV/CONF_backup /home/${USER}/ENV/CONF
+    # fi
+    # if [ -d /home/${USER}/ENV/shareENV_backup ]; then
+        # ln -s /home/${USER}/ENV/shareENV_backup /home/${USER}/ENV/shareENV
+    # fi
+    # if [ -d /home/${USER}/ENV/serverENV_backup ]; then
+        # ln -s /home/${USER}/ENV/serverENV_backup /home/${USER}/ENV/serverENV
+    # fi
+    # if [ -d /home/${USER}/ENV/junENV_backup ]; then
+        # ln -s /home/${USER}/ENV/junENV_backup /home/${USER}/ENV/junENV
+    # fi
+
     # 因为HOME=/home/${USER}/ENV/shareENV/CONF
 
     # 如果这个目录不被占用，则卸挂载，无需sudo
