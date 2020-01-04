@@ -78,7 +78,6 @@ sshmfs_()
 {
     # 本地shareENV、CONF链接改指向shareENV_backup、CONF_back
 
-    echo 1
 
     if [ $# -eq 0 ]; then
         local _mfs_source="$mfs_source"
@@ -86,7 +85,6 @@ sshmfs_()
         local _mfs_source="$1"
     fi
 
-    echo 2  
 
     # 挂载${hostname}上的mfs
     if [ -d /home/${USER}/mfs ]; then
