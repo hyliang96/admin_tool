@@ -59,6 +59,9 @@ argparse()
         files=("${@}")
         server_set="${server_set_path%%:*}"  # 第一个':'左侧
         server_path="${server_set_path#*:}" # 第一个':'右侧
+        if [ "$server_path" = "$server_set_path" ]; then
+            server_path='.'
+        fi
     else
         server_set=$1; shift
     fi
