@@ -161,6 +161,7 @@ allsendssh_() {
     # allow authorization agent in this command
     eval `ssh-agent -s`
     ssh-add
+    # 发送 .ssh/
     ssh -A -t $source_host ". $admin_tool_path/load.sh  && allsendssh__ '$username' '$server_set'"
     # remove all keys
     ssh-add -D
@@ -191,7 +192,8 @@ It wont do:
     echo "=================== making keys in /home/$username/.ssh  ====================="
     # 若已有id_rsa,id_rsa.pub，则会询问你是否覆盖之
     su - $username -c 'ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa -q'
-     # cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys'
+    # 不允许用服务器的私钥登录服务器自己
+    # cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys'
 
     echo; echo; echo
     echo "======= distributing /home/$username/.ssh to server set [${server_set}] ========"
