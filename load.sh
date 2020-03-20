@@ -116,6 +116,8 @@ slG()
 }
 alias sl_home="sudo zsh $admin_tool_path/slG.sh /home"
 
+alias du_home='sudo ncdu /home -x'
+
 # slG()
 # {
     # local tmp_log=$(mktemp /tmp/tmp.XXXXXXXXXX)
