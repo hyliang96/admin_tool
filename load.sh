@@ -116,7 +116,10 @@ slG()
 }
 alias sl_home="sudo zsh $admin_tool_path/slG.sh /home"
 
-alias du_home='sudo ncdu /home -x'
+du_home() {
+    tmux new -s du_home 'sudo ncdu /home -x' || \
+    tmux attach -t du_home
+}
 
 # slG()
 # {
