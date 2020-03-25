@@ -121,6 +121,9 @@ du_home() {
     tmux attach -t du_home
 }
 
+. $here/quota/quota_du.sh
+# quota_du: 通过quota显示/home所在文件系统的各个用户的文件总大小
+
 # slG()
 # {
     # local tmp_log=$(mktemp /tmp/tmp.XXXXXXXXXX)
