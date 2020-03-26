@@ -1,30 +1,46 @@
 #!/usr/bin/env zsh
+# 只可用zsh执行
 
+filessys_size="$(df /home | awk 'NR!=1' | awk '{print $2}')"
 
-mount_point=$(df /home | awk 'NR!=1' | awk '{print $NF}')
-reserved_size=10 # GB
-
-size="$(df -h /home | awk 'NR!=1' | awk '{print $2}')"
-hard_total_quota="$(( ${size:0:-1} - $reserved_size ))" # hard quota for all normal users (i.e. quota group)
-hard_user_quota="$(( $hard_total_quota * 0.14 ))"       # hard quota for each normal user
-soft_user_quota="$(( $hard_user_quota * 0.7 ))"         # soft quota for each normal user
-
+hard_user_quota="$(( $filessys_size * 0.15 ))"       # hard quota for each normal user
+soft_user_quota="$(( $hard_user_quota * 0.5 ))"         # soft quota for each normal user
+# 四舍五入
 hard_user_quota="${hard_user_quota%.*}"
 soft_user_quota="${soft_user_quota%.*}"
 
-echo ${hard_total_quota}G
-echo ${soft_user_quota}G ${hard_user_quota}G
+echo 'quota for all ordinary users'
+echo "soft limit = $(numfmt --from=iec-i --to=iec-i --suffix=B ${soft_user_quota}KiB)"
+echo "hard limit = $(numfmt --from=iec-i --to=iec-i --suffix=B ${hard_user_quota}KiB)"
 
+# 加quota的文件系统为 /home 所在的文件系统
+quota_filesys=$(df /home | awk 'NR!=1' | awk '{print $NF}')
+
+# 修改 /home/LargeData 的主人为 "LargeData" 用户
+sudo useradd LargeData
+sudo chown -R LargeData:LargeData /home/LargeData
+sudo chmod -R a+r /home/LargeData
+sudo chmod a+x /home/LargeData/*
+
+
+# set group quota for group 'quota'
 # sudo groupadd quota
-# sudo setquota -g quota 0 ${hard_total_quota}G 0 0 $mount_point
+# sudo setquota -g quota 0 ${hard_total_quota}G 0 0 $quota_filesys
 # sudo quota -vsg  quota
 
+# 将普通用户(UID大于等于500)设置quota
 for user in $(awk -F: '{ if($3>=500) print $1}' /etc/passwd); do
-    # sudo usermod -aG quota $user
-    sudo setquota -u $user ${soft_user_quota}G ${hard_user_quota}G 0 0 $mount_point
-    sudo quota -vs $user
-    # break
+    sudo setquota -u $user ${soft_user_quota} ${hard_user_quota} 0 0 $quota_filesys
+    sudo quota -vs $user # 显示普通用户的quota
 done
 
-sudo repquota -s $mount_point
+# # 取消普通用户的quota
+# for user in $(awk -F: '{ if($3>=500) print $1}' /etc/passwd); do
+    # sudo setquota -u $user 0 0 0 0 $quota_filesys
+    # sudo quota -vs $user # 显示普通用户的quota
+# done
+
+# 显示所有用户的quota
+sudo repquota -s $quota_filesys
+
 
