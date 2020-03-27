@@ -385,7 +385,73 @@ send 本地文件(夹)1 (本地文件(夹)2 ...) [机器编组]:接受文件夹�
 
 # 服务器其他管理命令
 
-### 启动mfs
+## 磁盘用量限额
+
+本工具包使用 `quota  `来实时统计以及限制 `/home` 所在文件系统中各个用户使用磁盘的大小 (以下称用户磁盘用量).
+
+### 实时查看用户磁盘用量
+
+`quota` 比 `ncdu` 或 `du` 好: `quota` 会持续记录各个用户增删文件的大小, 因此可以实时获得获得 用户磁盘用量;  而 `ncdu` 或 `du` 是现场统计`/home`的各个子文件夹大小, 很耗时.
+
+*   安装 `quota` 软件, 并配置对 `/home`所在文件系统 的监控
+
+  ```bash
+  zsh ./quota/install_quota_du.sh
+  ```
+
+*   使用
+
+    执行 `quota_du` 命令 (需要sudo权限), 以列出降序排列的 用户磁盘用量.
+
+### 设置用户磁盘用量限额
+
+
+```bash
+# 设置限额
+zsh ./quota/set_quota.sh
+# 取消限额
+zsh ./quota/set_quota.sh --unset
+```
+
+在 `set_quota.sh` 文件中可通过修改下述”比例”修改, 来修改每个普通用户 (uid<500) 的磁盘用量的限额: 
+
+*   hard_limit =  `/home` 所在文件系统大小 * 某个比例
+*   soft_limit = hard_limit * 某个比例
+
+当用户
+
+*   超过soft_limit时: 在宽限期 (grace) 内仍然可继续写入文件, 但向此用户发警告; 超过宽限期, 则不得继续写入并报错.
+*   超过hard_limit时: 不得继续写入并报错.
+
+### 发送quota警告到用户
+
+脚本 `warnquota.sh`: 向所有 超过soft limit而未达hard limit的 用户, 发送警告其的终端. 
+
+*   手动发送
+
+    ```bash
+    zsh ./quota/warnquota.sh
+    # 或
+    bash ./quota/warnquota.sh
+    ```
+
+    但无法用sh执行.
+
+*   定时发送
+
+    设置每5分钟发送一次quota warning到用户的终端
+
+    执行 `sudo crontab -e`, 然后在文件结尾写入
+
+    ```bash
+    SHELL=/bin/bash   # 默认用bash而不是sh执行warnquota.sh
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin   # 加载quota命令
+    */5 * * * * <path-to-warnquota.sh>
+    ```
+
+    然后保存, 退出编辑器.
+
+## 启动mfs
 
 当服务器重启后，`/mfs` 没有挂载，请输入
 
