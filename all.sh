@@ -68,6 +68,7 @@ argparse()
 
     servers=()
     parse_server_set "$server_set" servers
+    # declare -p servers
 
     # ---------------------------------------
     # 命令生成

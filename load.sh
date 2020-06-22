@@ -7,6 +7,7 @@ here=$(cd "$(dirname "${BASH_SOURCE[0]-$0}")"; pwd)
 here="`echo $here | sed 's/^\/mfs\/\([^\/]\+\)/\/home\/\1\/mfs/'`"
 admin_tool_path="${here}"
 
+. $admin_tool_path/hosts.sh
 
 alias _all="zsh $here/all.sh"
 all()

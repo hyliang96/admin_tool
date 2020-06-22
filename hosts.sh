@@ -75,7 +75,7 @@ add_set() {
 
     server_sets+=("$set_name")
     eval "${set_name}=${servers}"
-    export $set_name
+    # export $set_name
     echo $server_sets
     declare -p $set_name
 }
