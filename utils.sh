@@ -14,7 +14,7 @@ is_array() {
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]-$0}")"; pwd)
 . $here/path.sh
-# . $here/hosts.sh
+. $here/hosts.sh
 
 # 检查server_set_是否有效
 parse_server_set()
@@ -33,17 +33,17 @@ parse_server_set()
 
     if ! [ "$(is_array server_set_)" = true ]; then
         echo 'invalid server_set_' >&2
-        echo "Usage: all <server_set_name> '<command>'"
-        echo "Usage: all 'server1 server2 server3' '<command>'"
+        echo "Usage: <server_set_name> '<command>'"
+        echo "Usage: 'server1 server2 server3' '<command>'"
         echo "Usage: all 'server1 server2 server{3..5} server{10..13}' '<command>'"
         exit
     fi
 
     for i in $server_set_; do
         if [[ " ${server_sets[@]} " =~ " $i " ]]; then
-            eval "$servers_var+=( \${$i[@]} )"
+            eval "$servers_var=( \${$servers_var[@]} \${$i[@]} )"
         else
-            eval "$servers_var+=( $i )"
+            eval "$servers_var=( \${$servers_var[@]} $i )"
         fi
     done
 
