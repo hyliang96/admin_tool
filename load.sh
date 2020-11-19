@@ -123,6 +123,7 @@ du_home() {
 
 . $here/quota/quota_du.sh
 # quota_du: 通过quota显示/home所在文件系统的各个用户的文件总大小
+. $here/quota/mfs_quota.sh
 
 # slG()
 # {
