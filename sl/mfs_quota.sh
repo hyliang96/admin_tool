@@ -15,19 +15,19 @@ mfsquota() {
     ) | column -t -s $'\t'
 }
 
-mfs_cl() {
+cl_mfs() {
     echo '/mfs:'
     local result="$(mfsquota)"
     echo "${result}" | head -n 1
     echo "${result}" | tail -n +2 | sort --human-numeric-sort -k 2 -r | head -n 51 # awk  '$2 ~ /Ki/ { print }'
 }
 
-mfs_sl() {
+sl_mfs() {
     echo '/mfs:'
     local result="$(mfsquota)"
     echo "${result}" | head -n 1
     echo "${result}" | tail -n +2  | sort --human-numeric-sort -k 3 -r | head -n 51 # awk  '$3 ~ /GiB/ { print }'
 }
 
-alias mfs_du='mfs_sl'
+alias du_mfs='sl_mfs'
 
