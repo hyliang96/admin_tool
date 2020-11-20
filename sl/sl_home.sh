@@ -21,12 +21,12 @@ EOF
 alias sl_home='duc_home'
 
 # 按大小升序列出当前目录下所有文件与文件夹, 单位为G的
-alias _slG="zsh ${__sl_tool_dir__}/slG.sh"
-slG()
+alias _sl_watch="zsh ${__sl_tool_dir__}/slG.sh"
+sl_watch()
 {
-    _slG "$@"
+    _sl_watch "$@"
 }
-alias sl_home="sudo zsh ${__sl_tool_dir__}/slG.sh /home"
+alias sl_watch_home="sudo zsh ${__sl_tool_dir__}/slG.sh /home"
 
 ncdu_home() {
     tmux new -s du_home 'sudo ncdu /home -x' || \
