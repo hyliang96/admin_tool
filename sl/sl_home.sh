@@ -33,5 +33,9 @@ ncdu_home() {
     tmux attach -t du_home
 }
 
+
+. ${__sl_tool_dir__}/quota/quota_du.sh
+alias quota_home='quota_du'
+
 # release this variable in the end of file
 # unset -v __sl_tool_dir__

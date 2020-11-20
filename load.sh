@@ -107,7 +107,6 @@ admin()
     sudo su -c ". $admin_tool_path/load.sh && $cmds"
 }
 
-. $here/sl/quota/quota_du.sh
 # quota_du: 通过quota显示某给文件夹下所在文件系统的各个用户的文件总大小
 . $here/sl/mfs_quota.sh
 . $here/sl/sl_home.sh
