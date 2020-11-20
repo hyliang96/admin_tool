@@ -137,5 +137,7 @@ admin()
 
 . $here/software.sh
 
+# 设置交互内存
+alias swap="sudo bash ${admin_tool_path}/swap.sh"
 
 unset here
