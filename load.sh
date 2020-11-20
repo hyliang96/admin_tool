@@ -107,23 +107,10 @@ admin()
     sudo su -c ". $admin_tool_path/load.sh && $cmds"
 }
 
-
-# 按大小升序列出当前目录下所有文件与文件夹, 单位为G的
-alias _slG="zsh $here/slG.sh"
-slG()
-{
-    _slG "$@"
-}
-alias sl_home="sudo zsh $admin_tool_path/slG.sh /home"
-
-du_home() {
-    tmux new -s du_home 'sudo ncdu /home -x' || \
-    tmux attach -t du_home
-}
-
-. $here/quota/quota_du.sh
-# quota_du: 通过quota显示/home所在文件系统的各个用户的文件总大小
-. $here/quota/mfs_quota.sh
+. $here/sl/quota/quota_du.sh
+# quota_du: 通过quota显示某给文件夹下所在文件系统的各个用户的文件总大小
+. $here/sl/mfs_quota.sh
+. $here/sl/sl_home.sh
 
 # slG()
 # {
