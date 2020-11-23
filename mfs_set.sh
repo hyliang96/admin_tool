@@ -138,7 +138,7 @@ alias jchmfs='lsof /home/$USER/mfs/'
 mfsstart()
 {
     if [ "$mfs_source" = '' ]; then
-        sudo mfsmount /mfs -H mfsmaster && ls /home/$USER/mfs/
+        sudo mfsmount /mfs -H mfsmaster &&  mfsmetalogger start && ls /home/$USER/mfs/
     else
         sudo sshfs  $mfs_source:/mfs /mfs -o allow_other,default_permissions
     fi
