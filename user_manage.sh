@@ -267,6 +267,8 @@ parse_user_info()
                 local info_source_host="$7"
             fi
             local info_uid="$(ssh $info_source_host "cat /etc/passwd | grep $username | awk -F: '{ printf \$3 }'")"
+            echo ${info_source_host}
+            echo ${info_uid}
             if [[ "$info_uid" =~ "^[0-9]+$" ]]; then
                 break
             else
