@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-mfsquota() {
+__mfsquota() {
     (
     echo "user\tindices\tsize"
 
@@ -15,16 +15,29 @@ mfsquota() {
     ) | column -t -s $'\t'
 }
 
+quota_mfs() {
+    if [ $# -ge 1 ]; then
+        local i=
+        for i in "${@}"; do
+            sudo mfsgetquota -h "/mfs/${i}"
+            echo
+        done
+    else
+        echo 'usage:'
+        echo '    quota_mfs <username> [<username> ...]'
+    fi
+}
+
 cl_mfs() {
     echo '/mfs:'
-    local result="$(mfsquota)"
+    local result="$(__mfsquota)"
     echo "${result}" | head -n 1
     echo "${result}" | tail -n +2 | sort --human-numeric-sort -k 2 -r | head -n 51 # awk  '$2 ~ /Ki/ { print }'
 }
 
 sl_mfs() {
     echo '/mfs:'
-    local result="$(mfsquota)"
+    local result="$(__mfsquota)"
     echo "${result}" | head -n 1
     echo "${result}" | tail -n +2  | sort --human-numeric-sort -k 3 -r | head -n 51 # awk  '$3 ~ /GiB/ { print }'
 }
