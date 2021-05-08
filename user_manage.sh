@@ -350,9 +350,9 @@ Attention:
     eval `ssh-agent -s`
     ssh-add
     if [ "$source_host" != '' ]; then
-        ssh -A "$source_host" -t ". $admin_tool_path/load.sh && allsendssh__ $username '$server_set'"
+        ssh -A "$source_host" -t "zsh -c '. $admin_tool_path/load.sh && allsendssh__ $username \"$server_set\"'"
     else
-        ssh -A "${servers[1]}" -t ". $admin_tool_path/load.sh && allnewkey '$server_set' $username"
+        ssh -A "${servers[1]}" -t "zsh -c '. $admin_tool_path/load.sh && allnewkey \"$server_set\" $username'"
     fi
     # remove all keys
     ssh-add -D
