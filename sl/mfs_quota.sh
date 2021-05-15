@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-__mfsquota() {
+__mfsquota_all() {
     (
     echo "user\tindices\tsize"
 
@@ -15,7 +15,7 @@ __mfsquota() {
     ) | column -t -s $'\t'
 }
 
-quota_mfs() {
+__mfsquota_user() {
     if [ $# -ge 1 ]; then
         local i=
         for i in "${@}"; do
@@ -24,22 +24,30 @@ quota_mfs() {
         done
     else
         echo 'usage:'
-        echo '    quota_mfs <username> [<username> ...]'
+        echo '    __mfsquota_user <username> [<username> ...]'
     fi
 }
 
 cl_mfs() {
-    echo '/mfs:'
-    local result="$(__mfsquota)"
-    echo "${result}" | head -n 1
-    echo "${result}" | tail -n +2 | sort --human-numeric-sort -k 2 -r | head -n 51 # awk  '$2 ~ /Ki/ { print }'
+    if [ $# -eq 0 ]; then
+        echo '/mfs:'
+        local result="$(__mfsquota_all)"
+        echo "${result}" | head -n 1
+        echo "${result}" | tail -n +2 | sort --human-numeric-sort -k 2 -r | head -n 51 # awk  '$2 ~ /Ki/ { print }'
+    else
+        __mfsquota_user "$@"
+    fi
 }
 
 sl_mfs() {
-    echo '/mfs:'
-    local result="$(__mfsquota)"
-    echo "${result}" | head -n 1
-    echo "${result}" | tail -n +2  | sort --human-numeric-sort -k 3 -r | head -n 51 # awk  '$3 ~ /GiB/ { print }'
+    if [ $# -eq 0 ]; then
+        echo '/mfs:'
+        local result="$(__mfsquota_all)"
+        echo "${result}" | head -n 1
+        echo "${result}" | tail -n +2  | sort --human-numeric-sort -k 3 -r | head -n 51 # awk  '$3 ~ /GiB/ { print }'
+    else
+        __mfsquota_user "$@"
+    fi
 }
 
 alias du_mfs='sl_mfs'
