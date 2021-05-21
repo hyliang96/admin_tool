@@ -40,7 +40,7 @@ fi
 
 # c1: 专供mfsmaster/管理员管理集群, 不对其他用户开放
 
-c=(juncluster{2..4})
+c=(juncluster{2..5})
 gJ1=(jungpu{1..11})
 gJ2=(jungpu{12..13})
 gJ3=(jungpu{14..37})
@@ -59,7 +59,7 @@ J12=( "${J1[@]}"   "${gJ2[@]}" )
 gJ23=( "${gJ2[@]}" "${gJ3[@]}" )
 J23=( "${gJ23[@]}" )
 a=( "${c[@]}" "${g[@]}" )
-avv=(juncluster{2..4} jungpu{1..2} jungpu{4..11} jungpu{13..22} jungpu{24..37})
+avv=(juncluster{2..5} jungpu{1..2} jungpu{4..11} jungpu{13..22} jungpu{24..37})
 av=( "${avv[@]}" jungpu38 )
 
 # 有效编组：即只有写在此处的编组才会被 `all` 命令使用
