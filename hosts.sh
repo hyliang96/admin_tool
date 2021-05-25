@@ -59,7 +59,7 @@ J12=( "${J1[@]}"   "${gJ2[@]}" )
 gJ23=( "${gJ2[@]}" "${gJ3[@]}" )
 J23=( "${gJ23[@]}" )
 a=( "${c[@]}" "${g[@]}" )
-avv=(juncluster{2..5} jungpu{1..2} jungpu{4..11} jungpu{13..22} jungpu{24..37})
+avv=(juncluster{2..5} jungpu1 jungpu{3..11} jungpu{13..37})
 av=( "${avv[@]}" jungpu38 )
 
 # 有效编组：即只有写在此处的编组才会被 `all` 命令使用
