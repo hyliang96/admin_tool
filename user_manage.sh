@@ -201,6 +201,34 @@ It wont do:
     allsendssh__ "$username" "$server_set"
 }
 
+alladdpubkey()
+{
+    if [ $# -ne 2 ]; then
+        echo 'Usage: `alladdpubkey <username>@<server_set> '\''<pub-key>'\''`
+What it will do on each host:
+    make dir ~/.ssh if it does not exist
+    add public key to ~/.ssh/authorized_keys'
+        return
+    fi
+
+    local username server_set error
+    parse_username_server "$1" username server_set error
+    [ "$error" = true ] && { echo &&  _alladduser -h; return; }
+    shift
+
+    echo "username: $username"
+    echo "server_set: $server_set"
+
+    local pubkey="$1"
+
+    echo "========== add public key in /home/${username}/.ssh/authorized_keys  =========="
+    all "${server_set}" "su ${username} -c \\
+    \"mkdir -p /home/${username}/.ssh && \\
+    chmod 700 /home/${username}/.ssh && \\
+    echo '${pubkey}' >> /home/${username}/.ssh/authorized_keys && \\
+    chmod 600 /home/${username}/.ssh/authorized_keys\""
+}
+
 
 userguide()
 {
