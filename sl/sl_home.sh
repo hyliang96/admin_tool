@@ -6,16 +6,15 @@ __sl_tool_dir__=$(cd "$(dirname "${BASH_SOURCE[0]-$0}")"; pwd)
 
 # 罗列home下的用户使用情况
 duc_home() {
-    (sudo su -c bash <<-EOF
-[ "$(command -v duc)" = '' ] &&   apt upudate &&   apt -y install duc # install duc
-if [ "$(command -v duc)" = '' ]; then
-    echo 'falled to install duc'
-else
-    # [ ! -e /root/.duc.db ]
-    [[  "$(sudo su -c 'duc ls -Fg /home' 2>&1)" =~ 'Database not found' ]] &&  duc index -fHpx /home
-    duc ls -Fg /home
-fi
-EOF
+    (
+    [ "$(command -v duc)" = '' ] && sudo apt upudate && sudo apt -y install duc # install duc
+    if [ "$(command -v duc)" = '' ]; then
+        echo 'falled to install duc'
+    else
+        # [ ! -e /root/.duc.db ]
+        [[  "$(sudo su -c 'duc ls -Fg /home' 2>&1)" =~ 'Database not found' ]] && sudo duc index -fHpx /home
+        sudo duc ls -Fg /home
+    fi
     )| grep -E '^[ ]*[0-9.]+G' --color=never
 }
 
