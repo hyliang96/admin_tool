@@ -59,14 +59,17 @@ J12=( "${J1[@]}"   "${gJ2[@]}" )
 gJ23=( "${gJ2[@]}" "${gJ3[@]}" )
 J23=( "${gJ23[@]}" )
 a=( "${c[@]}" "${g[@]}" )
-avv=(juncluster{2..4} jungpu1 jungpu{3..13} jungpu{14..23} jungpu{25..37})
+#avv=(juncluster{2..4} jungpu1 jungpu{3..13} jungpu{14..23} jungpu{25..37})
+avv=(juncluster{2..4} jungpu1 jungpu{3..11} jungpu{14..23} jungpu{25..37})
 av=( "${avv[@]}" jungpu38 )
 
 # 本科生或访问学者,只能4卡
-bks=(jungpu1 jungpu{3..8} jungpu{10..13} jungpu{21..23})
+#bks=(jungpu1 jungpu{3..8} jungpu{10..13} jungpu{14..17} jungpu{21..23})
+bks=(jungpu1 jungpu{3..8} jungpu{10..11} jungpu{14..17} jungpu{21..23})
+bks_tmp=(jungpu{14..17})
 
 # 有效编组：即只有写在此处的编组才会被 `all` 命令使用
-server_sets=(gJ1 J1 gJ2 J2 gJ3 J3 gJ4 J4 gJ12 J12 gJ23 J23 c g a av avv bks)
+server_sets=(gJ1 J1 gJ2 J2 gJ3 J3 gJ4 J4 gJ12 J12 gJ23 J23 c g a av avv bks bks_tmp)
 
 
 # # 用不了的gpu
