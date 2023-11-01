@@ -137,13 +137,24 @@ alias jchmfs='lsof /home/$USER/mfs/'
 
 mfsstart()
 {
+    mfsstop
     if [ "$mfs_source" = '' ]; then
-          sudo mfsmetalogger start && sudo mfsmount /mfs -H mfsmaster && ls /home/$USER/mfs/
+        sudo mfsmetalogger start
+        sudo mfsmount /mfs -H mfsmaster
+        ls /home/$USER/mfs/
     else
         sudo sshfs  $mfs_source:/mfs /mfs -o allow_other,default_permissions
     fi
     echo 'ls /mfs | head -n 10'
     echo $(ls /mfs | head -n 10)
+}
+
+mfsstop()
+{
+    sudo umount /mfs
+    if [ "$mfs_source" = '' ]; then
+        sudo mfsmetalogger stop
+    fi
 }
 
 # 开启原生的mfs
