@@ -5,7 +5,8 @@ mfs_source=''
 
 # 检测服务器的类型、所属局域网
 host_name="$(hostname | sed 's/img[0-9]\+//g')"
-host_id=$(echo $host_name | tr -cd '[0-9]')
+host_id="$(echo $host_name | tr -cd '[0-9]')"
+host_type="$(echo $host_name | tr -d '[0-9]')"
 # if [  "$(hostname | tr -d '[0-9]')" = 'img' ] &&  [ $host_id -ge 19 ] && [ $host_id -le 21 ]; then
     # # img19-img20 = jungpu25-jungpu27
     # host_type='gpu'
@@ -14,8 +15,7 @@ host_id=$(echo $host_name | tr -cd '[0-9]')
     # mfs_source='jungpu'"`expr $host_id - 18`" # jungpu25-27 -> jungpu7-9
 
 # jungpuxx (xx=12-49) 的/mfs 用sshfs挂载 jungpu(xx-11) 的 /mfs
-if [ "$(echo $host_name | tr -d '[0-9]')" = 'jungpu' ] ; then
-    host_type='gpu'
+if [ "${host_type}" = 'jungpu' ] ; then
     if [ $host_id -le 11 ]; then       # jungpu1-11
         host_group='J1'
         mfs_source=''
@@ -29,9 +29,8 @@ if [ "$(echo $host_name | tr -d '[0-9]')" = 'jungpu' ] ; then
         fi
         mfs_source='jungpu'"$(( ( $host_id - 11 ) % 11 + 1 ))"
     fi
-    [ $mfs_source = jungpu2 ] && mfs_source=jungpu3
-elif [ "$(echo $host_name | tr -d '[0-9]')" = 'juncluster' ] ; then # juncluster1-5
-    host_type='cpu'
+    [ "${mfs_source}" = 'jungpu2' ] && mfs_source=jungpu3
+elif [  "${host_type}" = 'juncluster' ] ; then # juncluster1-5
     host_group='J1'
     mfs_source=''
 fi
