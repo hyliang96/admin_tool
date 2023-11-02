@@ -13,23 +13,27 @@ host_id=$(echo $host_name | tr -cd '[0-9]')
     # host_id="`expr $host_id + 6`"
     # mfs_source='jungpu'"`expr $host_id - 18`" # jungpu25-27 -> jungpu7-9
 
+# jungpuxx (xx=12-49) 的/mfs 用sshfs挂载 jungpu(xx-11) 的 /mfs
 if [ "$(echo $host_name | tr -d '[0-9]')" = 'jungpu' ] ; then
     host_type='gpu'
-    if [ $host_id -le 13 ]; then
-        host_group='JUN1'   # 在jungpu1-13，juncluster1-4
-        if [ $host_id -ge 12 ]; then
-            # 在jungpu12-13
-            # mfs 用sshfs挂载cpu1-2
-            mfs_source='juncluster'"$((  ( $host_id - 11 ) % 11 + 1 ))"
-        fi
+    if [ $host_id -le 11 ]; then       # jungpu1-11
+        host_group='J1'
+        mfs_source=''
     else
-        host_group='JUN2'   # 在jungpu>=14
-        mfs_source='jungpu'"$(( ( $host_id - 13 ) % 11 + 1 ))"
-        # jungpuxx 的/mfs用sshfs挂载 jungpu(xx-13) 的 /mfs
+        if [ $host_id -le 13 ]; then   # jungpu12-13
+            host_group='J2'
+        elif [ $host_id -le 37 ]; then # jungpu14-37
+            host_group='J3'
+        else                           # jungpu38-49
+            host_group='J4'
+        fi
+        mfs_source='jungpu'"$(( ( $host_id - 11 ) % 11 + 1 ))"
     fi
-else
+    [ $mfs_source = jungpu2 ] && mfs_source=jungpu3
+elif [ "$(echo $host_name | tr -d '[0-9]')" = 'juncluster' ] ; then # juncluster1-5
     host_type='cpu'
-    host_group='JUN1'
+    host_group='J1'
+    mfs_source=''
 fi
 
 
