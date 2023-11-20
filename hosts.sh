@@ -68,7 +68,7 @@ bks=(jungpu1 jungpu{3..8} jungpu{10..11} jungpu{14..17} jungpu{21..23})
 bks_tmp=(jungpu{14..17})
 
 # 有效编组：即只有写在此处的编组才会被 `all` 命令使用
-server_sets=(gJ1 J1 gJ2 J2 gJ3 J3 gJ4 J4 c g a bks bks_tmp)
+server_sets=(gJ1 J1 gJ2 J2 gJ3 J3 gJ4 J4 gJ5 J5 c g a bks bks_tmp)
 
 
 # # 用不了的gpu
