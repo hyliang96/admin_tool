@@ -367,7 +367,7 @@ Attention:
 
 
     echo "============================ making user account  ============================"
-    all "$server_set" "$(adduser_command $username $realname $uid $enc_password)"
+    all "$server_set" "$(adduser_command "$username" "$realname" "$uid" "$enc_password")"
 
     echo
     echo

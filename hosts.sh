@@ -44,9 +44,9 @@ fi
 # c5: 专供管理员管理集群, 不对其他用户开放
 
 c=(juncluster{1..4})
-gJ1=(jungpu1 jungpu{3..11})
+gJ1=(jungpu{1,{3..11}})
 gJ2=(jungpu{12..13})
-gJ3=(jungpu{14..37})
+gJ3=(jungpu{{14..15},{17..37}})
 gJ4=(jungpu{38..49})
 gJ5=(jungpu{50..51})
 
