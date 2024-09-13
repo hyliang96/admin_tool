@@ -4,7 +4,7 @@
 # get absoltae path to the dir this is in, work in bash, zsh
 # if you want transfer symbolic link to true path, just change `pwd` to `pwd -P`
 here=$(cd "$(dirname "${BASH_SOURCE[0]-$0}")"; pwd)
-here="`echo $here | sed 's/^\/mfs\/\([^\/]\+\)/\/home\/\1\/mfs/'`"
+here="`readlink $here | sed -E 's|^/mfs/([^/]+)|/home/\1/mfs|'`"
 admin_tool_path="${here}"
 
 
