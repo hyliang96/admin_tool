@@ -13,7 +13,6 @@ is_array() {
 
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]-$0}")"; pwd)
-. $here/path.sh
 . $here/hosts.sh
 
 # 检查server_set_是否有效

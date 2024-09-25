@@ -44,9 +44,9 @@ fi
 # c5: 专供管理员管理集群, 不对其他用户开放
 
 c=(juncluster{1..4})
-gJ1=(jungpu1 jungpu{3..11})
+gJ1=(jungpu{1,{3..11}})
 gJ2=(jungpu{12..13})
-gJ3=(jungpu{14..37})
+gJ3=(jungpu{{14..15},{17..37}})
 gJ4=(jungpu{38..49})
 gJ5=(jungpu{50..51})
 
@@ -70,7 +70,11 @@ kcxm=(jungpu{14..17})
 bks=(juncluster{2,4} jungpu1 jungpu{3..8} jungpu{10..11} jungpu{14..17} jungpu{21..23})
 
 # 研究生，能用除了c5、gJ4、gJ5以外所有节点
+<<<<<<< HEAD
 yjs=( "${c[@]}" "${gJ1[@]}" "${gJ3[@]}" )
+=======
+yjs=(juncluster{2..4} "${gJ1[@]}" "${gJ3[@]}" )
+>>>>>>> 6553b8a5eee4f8e2560985890c9628be69bd3501
 
 # c5: 专供管理员管理集群, 不对其他用户开放
 # gJ4、gJ5有更高级的显卡，需要单独开账号给受管理员批准的用户
