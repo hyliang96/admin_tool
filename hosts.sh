@@ -70,12 +70,8 @@ kcxm=(jungpu{14..17})
 bks=(juncluster{2,4} jungpu1 jungpu{3..8} jungpu{10..11} jungpu{14..17} jungpu{21..23})
 
 # 研究生，能用除了c5、gJ4、gJ5以外所有节点
-<<<<<<< HEAD
-yjs=(juncluster{2..4} "${gJ1[@]}" "${gJ3[@]}" )
-
-=======
 yjs=( "${c[@]}" "${gJ1[@]}" "${gJ3[@]}" )
->>>>>>> b3815b321e7e6d5d26eed8713ef8fd5e46b2f431
+
 # c5: 专供管理员管理集群, 不对其他用户开放
 # gJ4、gJ5有更高级的显卡，需要单独开账号给受管理员批准的用户
 
