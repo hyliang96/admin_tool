@@ -43,7 +43,8 @@ fi
 
 # c5: 专供管理员管理集群, 不对其他用户开放
 
-c=(juncluster{1..4})
+# c=(juncluster{1..4})
+c=(juncluster{2..4})
 gJ1=(jungpu{1,{3..11}})
 gJ2=(jungpu{12..13})
 gJ3=(jungpu{{14..15},{17..37}})
@@ -67,7 +68,9 @@ a=( "${c[@]}" "${g[@]}" )
 kcxm=(jungpu{14..17})
 
 # 本科生或访问学者,只能用4卡机器
-bks=(juncluster{2,4} jungpu1 jungpu{3..8} jungpu{10..11} jungpu{14..17} jungpu{21..23})
+# bks=(juncluster{2,4} jungpu1 jungpu{3..8} jungpu{10..11} jungpu{14..17} jungpu{21..23})
+# 修改：本科生使用g37前的机器，即包含1080和2080
+bks=( "${c[@]}" "${gJ1[@]}" "${gJ3[@]}" )
 
 # 研究生，能用除了c5、gJ4、gJ5以外所有节点
 yjs=( "${c[@]}" "${gJ1[@]}" "${gJ3[@]}" )
