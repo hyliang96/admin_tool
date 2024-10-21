@@ -23,6 +23,30 @@ set noeb vb t_vb=                " 关闭鸣叫。Timer函数执行时会鸣叫�
 let g:loaded_matchparen=1        " 关闭括号匹配高亮
 " set noshowmatch
 
+
+" 配置多语言环境
+if has("multi_byte")
+    " UTF-8 编码
+    set encoding=utf-8
+    set termencoding=utf-8
+    set formatoptions+=mM
+    " set fileencoding=utf-8
+    scriptencoding utf-8
+    set fencs=utf-8,gbk
+    if v:lang =~? '^\(zh\)\|\(ja\)\|\(ko\)'
+        set ambiwidth=double
+    endif
+    if has("win32")
+        source $VIMRUNTIME/delmenu.vim
+        source $VIMRUNTIME/menu.vim
+        language messages zh_CN.utf-8
+    endif
+else
+    echoerr "Sorry, this version of (g)vim was not compiled with +multi_byte"
+endif
+
+
+
 " disable 'Press Enter or type command to continue' at startup.
 " set cmdheight=2
 " -------------------------------------------------------------------------
